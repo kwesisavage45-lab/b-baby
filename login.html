@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-BABY Admin Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1b4d3e;
+            --primary-light: #e8f0ee;
+            --danger: #e53e3e;
+            --border: #e2e8f0;
+            --text: #222;
+            --muted: #777;
+            --bg: #f7f8fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        .brand h1 span { font-weight: 300; }
+
+        .brand p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .lock-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .error-msg {
+            background: #fff0f0;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-msg.show { display: flex; }
+
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+            margin-top: 4px;
+        }
+
+        .login-btn:hover:not(:disabled) { opacity: 0.88; }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="brand">
+        <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+        <h1>B-BABY <span>Collections</span></h1>
+        <p>Admin access only</p>
+    </div>
+
+    <div class="error-msg" id="error-msg">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="error-text">Invalid email or password</span>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrap">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="email" placeholder="admin@email.com" autocomplete="email">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+            <i class="fa-solid fa-key"></i>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+            <button class="toggle-password" onclick="togglePw()" type="button" tabindex="-1">
+                <i class="fa-solid fa-eye" id="pw-eye"></i>
+            </button>
+        </div>
+    </div>
+
+    <button class="login-btn" id="login-btn" onclick="login()">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+    </button>
+
+    <div class="back-link">
+        <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to store</a>
+    </div>
+</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://yjxdajkmmjvsrkbsgwlz.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_D4ad2jbVZ-ROGCFTP3FTfQ__VZ70uUt';
+    const { createClient } = supabase;
+    const _db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // If already logged in, go straight to admin
+    _db.auth.getSession().then(({ data }) => {
+        if (data.session) window.location.href = 'admin.html';
+    });
+
+    // Enter key support
+    document.getElementById('password').addEventListener('keydown', e => {
+        if (e.key === 'Enter') login();
+    });
+    document.getElementById('email').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('password').focus();
+    });
+
+    async function login() {
+        const email    = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const btn      = document.getElementById('login-btn');
+        const errBox   = document.getElementById('error-msg');
+
+        errBox.classList.remove('show');
+
+        if (!email || !password) {
+            showError('Please enter your email and password');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+
+        const { error } = await _db.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            showError('Invalid email or password');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
+        } else {
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+            setTimeout(() => window.location.href = 'admin.html', 600);
+        }
+    }
+
+    function showError(msg) {
+        document.getElementById('error-text').textContent = msg;
+        document.getElementById('error-msg').classList.add('show');
+    }
+
+    function togglePw() {
+        const input = document.getElementById('password');
+        const eye   = document.getElementById('pw-eye');
+        if (input.type === 'password') {
+            input.type = 'text';
+            eye.className = 'fa-solid fa-eye-slash';
+        } else {
+            input.type = 'password';
+            eye.className = 'fa-solid fa-eye';
+        }
+    }
+</script>
+</body>
+</html>
