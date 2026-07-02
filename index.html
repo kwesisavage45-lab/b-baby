@@ -5301,12 +5301,12 @@
                         console.log('Paystack popup closed without payment.');
                         resetBtn();
                     },
-                    callback: async function(response) {
+                    callback: function(response) {
                         // response.reference is the verified Paystack reference
                         console.log('✅ Paystack payment successful. Ref:', response.reference);
                         _pendingOrderData.paystackRef = response.reference;
                         resetBtn();
-                        await _finalizeOrder();
+                        _finalizeOrder(); // async internally — intentionally not awaited here
                     }
                 });
 
