@@ -5252,7 +5252,18 @@
             if (!total || total <= 0) return showOrderFormError('Your order total looks invalid — please refresh and try again.');
             _pendingOrderData = { name, phone, address, notes, total };
 
-            const email = currentUser?.email || (phone + '@bbaby.shop');
+            // Build a safe fallback "email" for guest checkout. Paystack's SDK validates
+            // email format internally and will reject anything that isn't email-shaped —
+            // so strip spaces/dashes/+ from the phone number before using it here.
+            const cleanPhoneForEmail = phone.replace(/[^0-9]/g, '');
+            const email = currentUser?.email || (cleanPhoneForEmail + '@bbaby.shop');
+
+            // Guard: catch a malformed email BEFORE calling Paystack, so we get a clear,
+            // actionable error instead of Paystack's SDK throwing an opaque internal error.
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                return showOrderFormError('There was a problem with your account/phone details. Please check your phone number and try again.');
+            }
             const ref   = 'BB-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
 
             const placeOrderBtn = document.getElementById('place-order-btn');
