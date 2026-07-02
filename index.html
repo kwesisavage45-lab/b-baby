@@ -2628,7 +2628,7 @@
                 <p class="size-guide-intro">Not sure which size to pick? Use the chart below to match your usual size to ours. If you're ever in between sizes or unsure, message us on WhatsApp with your measurements and we'll help you find the best fit.</p>
                 <div class="size-guide-img-wrap">
                     <!-- To update the size chart image, just replace images/size-chart.png with a new file of the same name, or change the src path below -->
-                    <img src="size-chart.png" alt="B-BABY Collections size chart">
+                    <img src="images/size-chart.png" alt="B-BABY Collections size chart">
                 </div>
                 <table class="size-guide-table">
                     <thead>
@@ -3804,7 +3804,7 @@
     <div class="cart-toast" id="cart-toast"></div>
 
     <!-- ===================== PAYSTACK SDK ===================== -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js" onerror="console.error('⚠️ Paystack SDK failed to load — check network/ad-blocker. Payment popup will not work until this loads.')"></script>
 
     <!-- ===================== SUPABASE ===================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5242,40 +5242,69 @@
             if (_fulfilment === 'delivery' && !address) return showOrderFormError('Please enter a delivery address');
             if (!cart.length) return showOrderFormError('Your cart is empty');
 
+            // Guard: Paystack SDK didn't load (blocked, offline, or still loading) —
+            // without this check, clicking "Continue to Payment" fails completely silently.
+            if (typeof PaystackPop === 'undefined') {
+                return showOrderFormError('Payment couldn\'t load. Please check your internet connection and refresh the page, then try again.');
+            }
+
             const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            if (!total || total <= 0) return showOrderFormError('Your order total looks invalid — please refresh and try again.');
             _pendingOrderData = { name, phone, address, notes, total };
 
             const email = currentUser?.email || (phone + '@bbaby.shop');
             const ref   = 'BB-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
 
-            const handler = PaystackPop.setup({
-                key:       PAYSTACK_PUBLIC_KEY,
-                email:     email,
-                amount:    Math.round(total * 100),   // Paystack uses pesewas (kobo × 100)
-                currency:  'GHS',
-                ref:       ref,
-                metadata: {
-                    custom_fields: [
-                        { display_name: 'Customer Name',  variable_name: 'customer_name',  value: name  },
-                        { display_name: 'Phone Number',   variable_name: 'phone_number',   value: phone },
-                        { display_name: 'Fulfilment',     variable_name: 'fulfilment',     value: _fulfilment },
-                        { display_name: 'Delivery Address', variable_name: 'delivery_address', value: address || 'Pickup' }
-                    ]
-                },
-                channels: ['card', 'mobile_money', 'bank', 'ussd', 'bank_transfer'],
-                onClose: function() {
-                    // User closed popup without paying — do nothing
-                    console.log('Paystack popup closed without payment.');
-                },
-                callback: async function(response) {
-                    // response.reference is the verified Paystack reference
-                    console.log('✅ Paystack payment successful. Ref:', response.reference);
-                    _pendingOrderData.paystackRef = response.reference;
-                    await _finalizeOrder();
-                }
-            });
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            const originalBtnHtml = placeOrderBtn ? placeOrderBtn.innerHTML : null;
+            if (placeOrderBtn) {
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening secure payment...';
+            }
 
-            handler.openIframe();
+            const resetBtn = () => {
+                if (placeOrderBtn) {
+                    placeOrderBtn.disabled = false;
+                    placeOrderBtn.innerHTML = originalBtnHtml;
+                }
+            };
+
+            try {
+                const handler = PaystackPop.setup({
+                    key:       PAYSTACK_PUBLIC_KEY,
+                    email:     email,
+                    amount:    Math.round(total * 100),   // Paystack uses pesewas (kobo × 100)
+                    currency:  'GHS',
+                    ref:       ref,
+                    metadata: {
+                        custom_fields: [
+                            { display_name: 'Customer Name',  variable_name: 'customer_name',  value: name  },
+                            { display_name: 'Phone Number',   variable_name: 'phone_number',   value: phone },
+                            { display_name: 'Fulfilment',     variable_name: 'fulfilment',     value: _fulfilment },
+                            { display_name: 'Delivery Address', variable_name: 'delivery_address', value: address || 'Pickup' }
+                        ]
+                    },
+                    channels: ['card', 'mobile_money', 'bank', 'ussd', 'bank_transfer'],
+                    onClose: function() {
+                        // User closed popup without paying — do nothing
+                        console.log('Paystack popup closed without payment.');
+                        resetBtn();
+                    },
+                    callback: async function(response) {
+                        // response.reference is the verified Paystack reference
+                        console.log('✅ Paystack payment successful. Ref:', response.reference);
+                        _pendingOrderData.paystackRef = response.reference;
+                        resetBtn();
+                        await _finalizeOrder();
+                    }
+                });
+
+                handler.openIframe();
+            } catch (err) {
+                console.error('Paystack failed to open:', err);
+                resetBtn();
+                showOrderFormError('Payment popup failed to open. Please refresh the page and try again.');
+            }
         }
 
         async function _finalizeOrder() {
