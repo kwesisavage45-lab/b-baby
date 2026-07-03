@@ -1131,7 +1131,11 @@
     const { createClient } = supabase;
     const _db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const ADMIN_EMAIL = 'erastwaykid145@gmail.com';
+    const ADMIN_EMAILS = [
+        'erastwaykid145@gmail.com',
+        'sarkodieyaaboampomaah@gmail.com',
+    ];
+    const isAdminEmail = (email) => ADMIN_EMAILS.includes((email || '').toLowerCase());
 
     function revealAdmin() {
         const loader = document.getElementById('auth-loading');
@@ -1142,7 +1146,7 @@
     _db.auth.getSession().then(({ data }) => {
         if (!data.session) {
             window.location.href = 'index.html';
-        } else if (data.session.user.email !== ADMIN_EMAIL) {
+        } else if (!isAdminEmail(data.session.user.email)) {
             _db.auth.signOut();
             window.location.href = 'index.html';
         } else {
