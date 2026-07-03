@@ -789,9 +789,40 @@
             cursor: pointer;
             color: var(--muted);
         }
+
+        /* Prevent admin content from flashing before auth check completes */
+        body {
+            visibility: hidden;
+        }
+        body.auth-ok {
+            visibility: visible;
+        }
+        #auth-loading {
+            visibility: visible;
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 9999;
+            font-size: 15px;
+            color: #777;
+        }
+        #auth-loading i {
+            font-size: 22px;
+            color: var(--primary, #8a2b47);
+        }
     </style>
 </head>
 <body>
+
+<div id="auth-loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Checking access…</span>
+</div>
 
 <header>
     <div>
@@ -1102,6 +1133,12 @@
 
     const ADMIN_EMAIL = 'erastwaykid145@gmail.com';
 
+    function revealAdmin() {
+        const loader = document.getElementById('auth-loading');
+        if (loader) loader.remove();
+        document.body.classList.add('auth-ok');
+    }
+
     _db.auth.getSession().then(({ data }) => {
         if (!data.session) {
             window.location.href = 'index.html';
@@ -1109,6 +1146,7 @@
             _db.auth.signOut();
             window.location.href = 'index.html';
         } else {
+            revealAdmin();
             loadProducts();
         }
     });
@@ -1666,6 +1704,7 @@
                     <h3>${escapeHtml(o.customer_name)}</h3>
                     <p>${escapeHtml(o.customer_phone || o.phone)} | ${escapeHtml(o.customer_address || o.address)}</p>
                 </div>
+                ${o.customer_notes ? `<div class="order-customer-note"><strong>Note:</strong> ${escapeHtml(o.customer_notes)}</div>` : ''}
                 ${o.note && !isPreorder ? `<div class="order-customer-note"><strong>Note:</strong> ${escapeHtml(o.note)}</div>` : ''}
                 <div class="order-items">
                     ${orderItems}
