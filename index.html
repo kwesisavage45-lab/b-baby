@@ -4640,7 +4640,7 @@
         ];
         // Helper — keeps all checks working with one line
         const ADMIN_EMAIL = ADMIN_EMAILS[0]; // primary admin (receives sale emails)
-        const isAdminEmail = (email) => ADMIN_EMAILS.includes(email);
+        const isAdminEmail = (email) => ADMIN_EMAILS.includes((email || '').toLowerCase());
 
         let currentUser = null;
         let pendingCheckout = false;
