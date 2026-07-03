@@ -552,6 +552,72 @@
         .section-panel { display: none; }
         .section-panel.active { display: block; }
 
+        /* MODE TOGGLE */
+        .mode-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+
+        .mode-toggle-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mode-toggle.preorder-mode {
+            background: #9333ea;
+        }
+
+        .mode-toggle-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .mode-toggle.preorder-mode .mode-toggle-slider {
+            transform: translateX(28px);
+        }
+
+        .mode-indicator {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .mode-indicator.regular {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .mode-indicator.preorder {
+            background: #f5f3ff;
+            color: #9333ea;
+        }
+
         /* ORDERS TOOLBAR */
         .orders-toolbar {
             display: flex;
@@ -632,6 +698,8 @@
 
         .order-card.status-pending { border-left-color: #f6ad55; }
         .order-card.status-processing { border-left-color: #4299e1; }
+        .order-card.status-preorder-awaiting-stock { border-left-color: #9333ea; }
+        .order-card.status-processed { border-left-color: #9333ea; }
         .order-card.status-shipped { border-left-color: #9f7aea; }
         .order-card.status-delivered { border-left-color: #48bb78; }
         .order-card.status-cancelled { border-left-color: #f56565; }
@@ -649,6 +717,8 @@
 
         .status-pending { background: #fffaf0; color: #c05621; }
         .status-processing { background: #ebf8ff; color: #2b6cb0; }
+        .status-preorder-awaiting-stock { background: #f5f3ff; color: #9333ea; }
+        .status-processed { background: #f5f3ff; color: #9333ea; }
         .status-shipped { background: #faf5ff; color: #553c9a; }
         .status-delivered { background: #f0fff4; color: #276749; }
         .status-cancelled { background: #fff5f5; color: #9b2c2c; }
@@ -751,9 +821,18 @@
     <!-- ===================== PRODUCTS PANEL ===================== -->
     <div id="panel-products" class="section-panel active">
 
+    <!-- Product Mode Toggle -->
+    <div class="mode-toggle-container">
+        <span class="mode-toggle-label">Product Type:</span>
+        <div class="mode-toggle" id="product-mode-toggle" onclick="toggleProductMode()">
+            <div class="mode-toggle-slider"></div>
+        </div>
+        <span class="mode-indicator regular" id="product-mode-indicator">Regular Items</span>
+    </div>
+
     <!-- ADD PRODUCT FORM -->
     <div class="form-card">
-        <h2><i class="fa-solid fa-plus-circle"></i> Add New Product</h2>
+        <h2 id="add-product-title"><i class="fa-solid fa-plus-circle"></i> Add New Product</h2>
 
         <!-- Image Upload -->
         <div class="upload-zone" id="upload-zone">
@@ -846,6 +925,12 @@
             </div>
         </div>
 
+        <div class="form-group" id="product-arrival-group" style="margin-top:14px; display:none;">
+            <label>Expected Arrival Days (Optional)</label>
+            <input type="number" id="product-arrival-days" placeholder="e.g. 14" min="1">
+            <small style="display:block;margin-top:4px;color:var(--muted);font-size:11px;">Estimated days until item arrives in stock</small>
+        </div>
+
         <br>
         <button class="submit-btn" id="submit-btn" onclick="addProduct()">
             <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Add Product
@@ -874,6 +959,15 @@
     <!-- ===================== ORDERS PANEL ===================== -->
     <div id="panel-orders" class="section-panel">
 
+        <!-- Mode Toggle -->
+        <div class="mode-toggle-container">
+            <span class="mode-toggle-label">Order Type:</span>
+            <div class="mode-toggle" id="mode-toggle" onclick="toggleOrderMode()">
+                <div class="mode-toggle-slider"></div>
+            </div>
+            <span class="mode-indicator regular" id="mode-indicator">Regular Orders</span>
+        </div>
+
         <div class="orders-toolbar">
             <div class="orders-toolbar-filters">
                 <div class="search-wrap">
@@ -881,12 +975,7 @@
                     <input type="text" id="order-search" placeholder="Search name, phone, or order #" oninput="filterOrders()">
                 </div>
                 <select id="order-status-filter" onchange="filterOrders()">
-                    <option value="">All Statuses</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
+                    <!-- Options will be populated by JS based on mode -->
                 </select>
             </div>
             <div class="orders-toolbar-actions">
@@ -900,7 +989,7 @@
         </div>
 
         <div class="section-title">
-            <span>All Orders</span>
+            <span id="orders-title">All Orders</span>
             <span id="orders-list-count" style="font-size:13px; color: var(--muted); font-weight:400;"></span>
         </div>
 
@@ -983,6 +1072,11 @@
                 </div>
             </div>
 
+            <div class="form-group" id="edit-product-arrival-group" style="display:none;">
+                <label>Expected Arrival Days (Optional)</label>
+                <input type="number" id="edit-product-arrival-days" placeholder="e.g. 14" min="1">
+            </div>
+
             <div class="form-group">
                 <label>Change Primary Image (optional)</label>
                 <input type="file" id="edit-image-input" accept="image/*">
@@ -998,7 +1092,8 @@
 <div class="toast" id="toast"></div>
 
 <!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     const SUPABASE_URL = 'https://yjxdajkmmjvsrkbsgwlz.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_D4ad2jbVZ-ROGCFTP3FTfQ__VZ70uUt';
@@ -1013,6 +1108,8 @@
         } else if (data.session.user.email !== ADMIN_EMAIL) {
             _db.auth.signOut();
             window.location.href = 'index.html';
+        } else {
+            loadProducts();
         }
     });
 
@@ -1023,6 +1120,7 @@
 
     let selectedFiles = [];
     let productsData = [];
+    let currentProductMode = 'regular'; // 'regular' or 'preorder'
 
     // ── IMAGE SELECTION ──────────────────────────────────────
     const imageInput = document.getElementById('image-input');
@@ -1147,6 +1245,33 @@
         });
     }
 
+    // ── PRODUCT MODE TOGGLE ──────────────────────────────────
+    function toggleProductMode() {
+        currentProductMode = currentProductMode === 'regular' ? 'preorder' : 'regular';
+        
+        const toggle = document.getElementById('product-mode-toggle');
+        const indicator = document.getElementById('product-mode-indicator');
+        const arrivalGroup = document.getElementById('product-arrival-group');
+        const title = document.getElementById('add-product-title');
+        
+        if (currentProductMode === 'preorder') {
+            toggle.classList.add('preorder-mode');
+            indicator.classList.remove('regular');
+            indicator.classList.add('preorder');
+            indicator.textContent = 'Preorder Items';
+            arrivalGroup.style.display = 'block';
+            title.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Add New Preorder Item';
+        } else {
+            toggle.classList.remove('preorder-mode');
+            indicator.classList.remove('preorder');
+            indicator.classList.add('regular');
+            indicator.textContent = 'Regular Items';
+            arrivalGroup.style.display = 'none';
+            title.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Add New Product';
+        }
+        loadProducts(); // Refresh list to show relevant items
+    }
+
     // ── ADD PRODUCT ──────────────────────────────────────────
     async function addProduct() {
         const name     = document.getElementById('product-name').value.trim();
@@ -1159,6 +1284,8 @@
         const description = document.getElementById('product-description').value.trim();
         const rating   = parseFloat(document.getElementById('product-rating').value) || null;
         const inStock  = document.getElementById('product-stock').value === 'true';
+        const isPreorder = currentProductMode === 'preorder';
+        const arrivalDays = parseInt(document.getElementById('product-arrival-days').value) || (isPreorder ? 14 : null);
 
         if (!price)     return showToast('Please enter a price', 'error');
         if (oldPrice && oldPrice <= price) return showToast('Previous price must be higher than the current price', 'error');
@@ -1197,7 +1324,9 @@
                 image_urls: uploadedUrls,
                 sizes: sizes,
                 colors: colors,
-                description: description || null
+                description: description || null,
+                is_preorder: isPreorder,
+                expected_arrival_days: arrivalDays
             });
 
             if (insertError) throw insertError;
@@ -1226,6 +1355,7 @@
         document.getElementById('product-description').value = '';
         document.getElementById('product-rating').value = '';
         document.getElementById('product-stock').value = 'true';
+        document.getElementById('product-arrival-days').value = '';
         selectedFiles = [];
         renderImageSlider();
         setProgress(0);
@@ -1237,11 +1367,19 @@
         const { data, error } = await _db.from('products').select('*').order('created_at', { ascending: false });
         if (error) { list.innerHTML = `<div class="empty-state"><p>Failed to load products</p></div>`; return; }
         productsData = data || [];
-        const count = productsData.length;
-        document.getElementById('product-count').textContent = `${count} product${count !== 1 ? 's' : ''}`;
-        document.getElementById('list-count').textContent = `${count} total`;
-        if (count === 0) { list.innerHTML = `<div class="empty-state"><p>No products yet.</p></div>`; return; }
-        list.innerHTML = productsData.map(p => `
+        
+        // Filter by current mode
+        const filtered = productsData.filter(p => {
+            const isPre = p.is_preorder === true;
+            return currentProductMode === 'preorder' ? isPre : !isPre;
+        });
+
+        const count = filtered.length;
+        document.getElementById('product-count').textContent = `${productsData.length} total products`;
+        document.getElementById('list-count').textContent = `${count} shown`;
+        if (count === 0) { list.innerHTML = `<div class="empty-state"><p>No ${currentProductMode} items found.</p></div>`; return; }
+        
+        list.innerHTML = filtered.map(p => `
             <div class="product-item" id="item-${p.id}">
                 <img src="${p.image_url || ''}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/64?text=No+Img'">
                 <div class="product-item-info">
@@ -1279,6 +1417,15 @@
         document.getElementById('edit-product-description').value = p.description || '';
         document.getElementById('edit-product-rating').value = p.rating || '';
         document.getElementById('edit-product-stock').value = p.in_stock.toString();
+        
+        const editArrivalGroup = document.getElementById('edit-product-arrival-group');
+        if (p.is_preorder) {
+            editArrivalGroup.style.display = 'block';
+            document.getElementById('edit-product-arrival-days').value = p.expected_arrival_days || '';
+        } else {
+            editArrivalGroup.style.display = 'none';
+        }
+        
         document.getElementById('edit-image-input').value = '';
         document.getElementById('edit-modal').classList.add('show');
     }
@@ -1297,6 +1444,9 @@
         const description = document.getElementById('edit-product-description').value.trim();
         const rating   = parseFloat(document.getElementById('edit-product-rating').value) || null;
         const inStock  = document.getElementById('edit-product-stock').value === 'true';
+        const pOriginal = productsData.find(item => item.id === id);
+        const isPreorder = pOriginal ? pOriginal.is_preorder : false;
+        const arrivalDays = parseInt(document.getElementById('edit-product-arrival-days').value) || (isPreorder ? 14 : null);
         const fileInput = document.getElementById('edit-image-input');
         const newFile  = fileInput.files[0];
         if (!price || !category) return showToast('Price and Category are required', 'error');
@@ -1323,7 +1473,9 @@
                 description: description || null,
                 rating,
                 in_stock: inStock,
-                image_url: imageUrl
+                image_url: imageUrl,
+                is_preorder: isPreorder,
+                expected_arrival_days: arrivalDays
             }).eq('id', id);
             if (error) throw error;
             showToast('Product updated successfully!', 'success');
@@ -1374,13 +1526,64 @@
 
     // ── ORDERS ───────────────────────────────────────────────
     let allOrders = [];
+    let currentOrderMode = 'regular'; // 'regular' or 'preorder'
+    
     async function loadOrders() {
         const list = document.getElementById('orders-list');
         const { data, error } = await _db.from('orders').select('*').order('created_at', { ascending: false });
         if (error) { list.innerHTML = `<p>Failed to load orders</p>`; return; }
         allOrders = data || [];
         document.getElementById('order-count').textContent = `${allOrders.length} orders`;
+        updateStatusFilter();
         renderOrdersList();
+    }
+
+    function toggleOrderMode() {
+        currentOrderMode = currentOrderMode === 'regular' ? 'preorder' : 'regular';
+        
+        // Update toggle UI
+        const toggle = document.getElementById('mode-toggle');
+        const indicator = document.getElementById('mode-indicator');
+        const title = document.getElementById('orders-title');
+        
+        if (currentOrderMode === 'preorder') {
+            toggle.classList.add('preorder-mode');
+            indicator.classList.remove('regular');
+            indicator.classList.add('preorder');
+            indicator.textContent = 'Preorder Orders';
+            title.textContent = 'Preorder Orders';
+        } else {
+            toggle.classList.remove('preorder-mode');
+            indicator.classList.remove('preorder');
+            indicator.classList.add('regular');
+            indicator.textContent = 'Regular Orders';
+            title.textContent = 'Regular Orders';
+        }
+        
+        updateStatusFilter();
+        renderOrdersList();
+    }
+
+    function updateStatusFilter() {
+        const filterSelect = document.getElementById('order-status-filter');
+        
+        if (currentOrderMode === 'regular') {
+            filterSelect.innerHTML = `
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+            `;
+        } else {
+            filterSelect.innerHTML = `
+                <option value="">All Statuses</option>
+                <option value="Preorder - Awaiting Stock">Preorder - Awaiting Stock</option>
+                <option value="Processing">Processing (Items Imported)</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+            `;
+        }
+        
+        filterSelect.value = '';
     }
 
     function escapeHtml(str) {
@@ -1398,53 +1601,157 @@
         const list = document.getElementById('orders-list');
         const search = document.getElementById('order-search').value.toLowerCase();
         const statusFilter = document.getElementById('order-status-filter').value;
+        
+        // Filter orders based on current mode
         const filtered = allOrders.filter(o => {
+            const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
+            const matchesMode = currentOrderMode === 'preorder' ? isPreorder : !isPreorder;
+            
             const matchesStatus = !statusFilter || o.status === statusFilter;
-            const matchesSearch = !search || (o.customer_name || '').toLowerCase().includes(search) || (o.phone || '').includes(search) || o.id.includes(search);
-            return matchesStatus && matchesSearch;
+            const customerName = o.customer_name || '';
+            const phone = o.customer_phone || o.phone || '';
+            const orderId = o.id || '';
+            const orderRef = o.order_ref || '';
+            const matchesSearch = !search || 
+                customerName.toLowerCase().includes(search) || 
+                phone.includes(search) || 
+                orderId.includes(search) ||
+                orderRef.toLowerCase().includes(search);
+            return matchesMode && matchesStatus && matchesSearch;
         });
+        
         document.getElementById('orders-list-count').textContent = `${filtered.length} shown`;
-        list.innerHTML = filtered.map(o => `
-            <div class="order-card status-${(o.status || 'pending').toLowerCase()}">
+        list.innerHTML = filtered.map(o => {
+            const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
+            
+            // Status options based on current mode
+            const statusOptions = currentOrderMode === 'regular'
+                ? `<option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                   <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>`
+                : `<option value="Preorder - Awaiting Stock" ${o.status === 'Preorder - Awaiting Stock' ? 'selected' : ''}>Preorder - Awaiting Stock</option>
+                   <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing (Items Imported)</option>
+                   <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                   <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>`;
+
+            const orderItems = isPreorder 
+                ? `<div class="order-item-line"><span>${escapeHtml(o.product_name || 'Product')}</span><span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span></div>`
+                : (o.items || []).map(item => {
+                    const variant = [item.size, item.color].filter(Boolean).join(' / ');
+                    return `<div class="order-item-line"><span>${item.name}${variant ? ' (' + variant + ')' : ''} x${item.quantity}</span><span>GHS ${(item.price * item.quantity).toFixed(2)}</span></div>`;
+                }).join('');
+
+            const balanceDue = parseFloat(o.balance_due || 0);
+            const totalLine = isPreorder
+                ? `<div class="order-total-line"><span>Total Price</span><span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span></div>
+                   ${balanceDue > 0 ? `<div class="order-item-line" style="color: #9333ea; font-weight: 600;"><span>Amount Paid</span><span>GHS ${(parseFloat(o.price || 0) - balanceDue).toFixed(2)}</span></div>
+                   <div class="order-item-line" style="color: #e53e3e; font-weight: 600;"><span>Balance Due</span><span>GHS ${balanceDue.toFixed(2)}</span></div>` : ''}`
+                : `<div class="order-total-line"><span>Total</span><span>GHS ${o.total?.toFixed(2)}</span></div>`;
+
+            const orderRef = isPreorder ? (o.order_ref || `#${o.id.slice(0,8)}`) : `#${o.id.slice(0,8)}`;
+            const statusClass = (o.status || 'pending').toLowerCase().replace(/\s+/g, '-');
+
+            const needsBalance = isPreorder && balanceDue > 0;
+            const balancePaid = o.balance_paid === true;
+
+            return `
+            <div class="order-card status-${statusClass}">
                 <div class="order-header">
                     <div>
-                        <span class="order-ref">#${o.id.slice(0,8)}</span>
+                        <span class="order-ref">${orderRef} ${isPreorder ? '<span style="background:#9333ea;color:white;padding:2px 6px;border-radius:4px;font-size:9px;margin-left:6px;">PREORDER</span>' : ''}</span>
                         <div class="order-date">${formatAdminDate(o.created_at)}</div>
                     </div>
-                    <span class="order-status-badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'Pending'}</span>
+                    <span class="order-status-badge status-${statusClass}">${o.status || 'Pending'}</span>
                 </div>
                 <div class="order-customer">
                     <h3>${escapeHtml(o.customer_name)}</h3>
-                    <p>${escapeHtml(o.phone)} | ${escapeHtml(o.address)}</p>
+                    <p>${escapeHtml(o.customer_phone || o.phone)} | ${escapeHtml(o.customer_address || o.address)}</p>
                 </div>
-                ${o.note ? `<div class="order-customer-note"><strong>Note:</strong> ${escapeHtml(o.note)}</div>` : ''}
+                ${o.note && !isPreorder ? `<div class="order-customer-note"><strong>Note:</strong> ${escapeHtml(o.note)}</div>` : ''}
                 <div class="order-items">
-                    ${(o.items || []).map(item => {
-                        const variant = [item.size, item.color].filter(Boolean).join(' / ');
-                        return `<div class="order-item-line"><span>${item.name}${variant ? ' (' + variant + ')' : ''} x${item.quantity}</span><span>GHS ${(item.price * item.quantity).toFixed(2)}</span></div>`;
-                    }).join('')}
-                    <div class="order-total-line"><span>Total</span><span>GHS ${o.total?.toFixed(2)}</span></div>
+                    ${orderItems}
+                    ${totalLine}
                 </div>
                 <div class="order-admin-controls">
                     <div class="form-group">
                         <label>Update Status</label>
-                        <select onchange="updateOrderStatus('${o.id}', this.value)">
-                            <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                            <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                            <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        <select onchange="handleStatusChange('${o.id}', this.value, ${needsBalance}, ${balancePaid}, ${balanceDue})">
+                            ${statusOptions}
                         </select>
                     </div>
+                    ${needsBalance && !balancePaid ? `
+                        <button class="toolbar-btn" style="width:100%; margin-top:8px; background:#e53e3e;" onclick="triggerBalancePayment('${o.id}', '${o.customer_name}', '${o.customer_phone || o.phone}', ${balanceDue})">
+                            <i class="fa-solid fa-credit-card"></i> Pay Outstanding Balance (GHS ${balanceDue.toFixed(2)})
+                        </button>
+                    ` : needsBalance && balancePaid ? `
+                        <div style="margin-top:8px; color:var(--success); font-weight:700; font-size:13px; text-align:center;">
+                            <i class="fa-solid fa-check-circle"></i> Balance Fully Paid
+                        </div>
+                    ` : ''}
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+    }
+
+    async function handleStatusChange(id, status, needsBalance, balancePaid, balanceDue) {
+        if (status === 'Delivered' && needsBalance && !balancePaid) {
+            if (confirm(`This order has an outstanding balance of GHS ${balanceDue.toFixed(2)}. The customer must pay via Paystack before the order can be marked as Delivered.\n\nWould you like to trigger the payment now?`)) {
+                const order = allOrders.find(o => o.id === id);
+                triggerBalancePayment(id, order.customer_name, order.customer_phone || order.phone, balanceDue);
+            }
+            // Reset the select to previous value
+            loadOrders();
+            return;
+        }
+        updateOrderStatus(id, status);
     }
 
     async function updateOrderStatus(id, status) {
         const { error } = await _db.from('orders').update({ status }).eq('id', id);
         if (error) showToast('Failed to update status', 'error');
         else { showToast('Status updated', 'success'); loadOrders(); }
+    }
+
+    // PAYSTACK SDK for Admin Balance Payments
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_1febcdc0f8881fb9843d3688f6bdbdaac049ed43';
+
+    function triggerBalancePayment(orderId, name, phone, amount) {
+        if (typeof PaystackPop === 'undefined') {
+            showToast('Paystack SDK not loaded', 'error');
+            return;
+        }
+
+        const email = (phone.replace(/[^0-9]/g, '') || 'customer') + '@bbaby.shop';
+        const ref = 'BAL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
+        const handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: email,
+            amount: Math.round(amount * 100),
+            currency: 'GHS',
+            ref: ref,
+            metadata: {
+                custom_fields: [
+                    { display_name: 'Customer Name', variable_name: 'customer_name', value: name },
+                    { display_name: 'Order ID', variable_name: 'order_id', value: orderId },
+                    { display_name: 'Payment Type', variable_name: 'payment_type', value: 'Balance Payment' }
+                ]
+            },
+            callback: async function(response) {
+                showToast('Balance payment successful!', 'success');
+                // Update order in database
+                const { error } = await _db.from('orders').update({ 
+                    balance_paid: true,
+                    balance_due: 0,
+                    amount_paid: amount + (allOrders.find(o => o.id === orderId).amount_paid || 0),
+                    status: 'Processing' // Move to processing after balance paid
+                }).eq('id', orderId);
+                
+                if (error) showToast('Failed to update order balance', 'error');
+                loadOrders();
+            }
+        });
+        handler.openIframe();
     }
 
     function filterOrders() { renderOrdersList(); }
