@@ -2254,6 +2254,7 @@
         <nav class="categories-nav" id="categories-nav">
             <a href="#" class="category-tab active" onclick="showDesktopPage('home', this)">Home</a>
             <a href="#" class="category-tab" onclick="showDesktopPage('collections', this)">Collections</a>
+            <a href="preorder.html" class="category-tab" style="color: var(--primary-color); font-weight: 700;"><i class="fa-solid fa-clock"></i> Preorder</a>
             <a href="#" class="category-tab" onclick="showPage('about', event)">About</a>
             <a href="#" class="category-tab" onclick="showPage('contact', event)">Contact</a>
             <a href="#" class="category-tab" onclick="showPage('profile', event)">Profile</a>
@@ -2318,6 +2319,22 @@
                 <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:75%"></div><div class="skeleton-line" style="width:55%; margin-top:8px"></div></div></div>
                 <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:65%"></div><div class="skeleton-line" style="width:40%; margin-top:8px"></div></div></div>
             </section>
+
+            <!-- Preorder Notice Banner -->
+            <div style="margin-top: 32px; margin-bottom: 20px; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 2px solid #ddd6fe; border-radius: 16px; padding: 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(147, 51, 234, 0.15); color: #9333ea; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">
+                        <i class="fa-solid fa-clock"></i> Limited Time
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #7c3aed; margin-bottom: 8px;">Wanna Shop on Preorder?</h3>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px; line-height: 1.5;">Reserve your favorite items now with flexible payment options. Pay in full or 50% today!</p>
+                    <a href="preorder.html" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%); color: white; padding: 12px 28px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 14px; transition: opacity 0.2s; box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        <i class="fa-solid fa-shopping-bag"></i> Browse Preorder Items
+                    </a>
+                </div>
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(147, 51, 234, 0.1); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(147, 51, 234, 0.08); border-radius: 50%;"></div>
+            </div>
         </div>
 
         <!-- ========== COLLECTIONS VIEW ========== -->
@@ -2502,6 +2519,11 @@
             <a href="#" class="menu-nav-item" onclick="showPage('wishlist-page', event)">
                 <i class="fa-regular fa-heart"></i>
                 <span class="menu-label">Wishlist</span>
+                <i class="fa-solid fa-chevron-right menu-chevron"></i>
+            </a>
+            <a href="preorder.html" class="menu-nav-item" style="color: var(--primary-color); font-weight: 700;">
+                <i class="fa-solid fa-clock" style="color: var(--primary-color);"></i>
+                <span class="menu-label">Preorder</span>
                 <i class="fa-solid fa-chevron-right menu-chevron"></i>
             </a>
 
@@ -3932,7 +3954,7 @@
 
             loadProductsTimeout = setTimeout(async () => {
                 try {
-                    let query = _db.from('products').select('*').eq('in_stock', true).order('created_at', { ascending: false });
+                    let query = _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).order('created_at', { ascending: false });
                     if (category) query = query.eq('category', category);
 
                     const { data, error } = await query;
@@ -4526,7 +4548,7 @@
             const grid = document.getElementById('home-product-grid');
             if (!grid) return;
             try {
-                const { data, error } = await _db.from('products').select('*').eq('in_stock', true).order('created_at', { ascending: false }).limit(4);
+                const { data, error } = await _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).order('created_at', { ascending: false }).limit(4);
                 if (error || !data || data.length === 0) {
                     grid.innerHTML = '<div class="products-empty" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-regular fa-bag-shopping" style="font-size:40px;display:block;margin-bottom:12px;color:#ddd;"></i><p>No products yet.</p></div>';
                     return;
@@ -4614,7 +4636,7 @@
         // ===================== AUTH =====================
         const ADMIN_EMAILS = [
             'erastwaykid145@gmail.com',  // Admin 1
-            // 'secondadmin@gmail.com',  // Admin 2 — uncomment and add here
+            'sarkodieyaaboampomaah@gmail.com',  // Admin 2
         ];
         // Helper — keeps all checks working with one line
         const ADMIN_EMAIL = ADMIN_EMAILS[0]; // primary admin (receives sale emails)
@@ -5338,7 +5360,7 @@
                 customer_name:  name,
                 phone,
                 address:        _fulfilment === 'pickup' ? 'PICKUP' : address,
-                notes:          (_fulfilment === 'pickup' ? '[Pickup] ' : '') + (notes || ''),
+                note:           (_fulfilment === 'pickup' ? '[Pickup] ' : '') + (notes || ''),
                 items,
                 total,
                 status:         'Pending',
@@ -5559,6 +5581,7 @@
         const STATUS_CLASS = {
             'Pending':    'status-pending',
             'Processing': 'status-processing',
+            'Preorder - Awaiting Stock': 'status-preorder',
             'Shipped':    'status-shipped',
             'Delivered':  'status-delivered',
             'Cancelled':  'status-cancelled'
@@ -5620,38 +5643,73 @@
             }
 
             content.innerHTML = data.map(o => {
-                const orderRef = o.id.slice(0, 8).toUpperCase();
+                const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
+                const orderRef = isPreorder ? (o.order_ref || o.id.slice(0, 8).toUpperCase()) : o.id.slice(0, 8).toUpperCase();
                 const statusClass = STATUS_CLASS[o.status] || 'status-pending';
-                const itemsHtml = (o.items || []).map(i => {
-                    const variant = [i.size, i.color].filter(Boolean).join(' / ');
-                    return `
-                    <div class="order-item-line">
-                        <span>${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
-                        <span>GHS ${(i.price * i.qty).toFixed(2)}</span>
+                
+                const itemsHtml = isPreorder 
+                    ? `<div class="order-item-line">
+                        <span>${escapeHtml(o.product_name || 'Product')}</span>
+                        <span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
+                    </div>`
+                    : (o.items || []).map(i => {
+                        const variant = [i.size, i.color].filter(Boolean).join(' / ');
+                        return `
+                        <div class="order-item-line">
+                            <span>${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
+                            <span>GHS ${(i.price * i.qty).toFixed(2)}</span>
+                        </div>
+                    `;}).join('');
+
+                const balanceDue = parseFloat(o.balance_due || 0);
+                const totalLine = isPreorder
+                    ? `<div class="order-total-line">
+                        <span>Total Price</span>
+                        <span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
                     </div>
-                `;}).join('');
+                    ${balanceDue > 0 ? `
+                        <div class="order-item-line" style="color: #9333ea; font-weight: 600;">
+                            <span>Amount Paid</span>
+                            <span>GHS ${(parseFloat(o.price || 0) - balanceDue).toFixed(2)}</span>
+                        </div>
+                        <div class="order-item-line" style="color: #e53e3e; font-weight: 600;">
+                            <span>Balance Due</span>
+                            <span>GHS ${balanceDue.toFixed(2)}</span>
+                        </div>
+                    ` : ''}`
+                    : `<div class="order-total-line">
+                        <span>Total</span>
+                        <span>GHS ${parseFloat(o.total).toFixed(2)}</span>
+                    </div>`;
+
+                const deliveryRow = isPreorder
+                    ? `<div class="order-delivery-row">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>${o.status === 'Preorder - Awaiting Stock' ? 'Awaiting stock arrival' : o.status === 'Processing' ? 'Items imported, preparing for delivery' : 'Estimated delivery: to be confirmed'}</span>
+                    </div>`
+                    : `<div class="order-delivery-row">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>${o.estimated_delivery ? 'Estimated delivery: ' + formatOrderDate(o.estimated_delivery) : 'Estimated delivery: to be confirmed'}</span>
+                    </div>`;
 
                 return `
                     <div class="order-card">
                         <div class="order-card-top">
                             <div>
-                                <div class="order-card-id">Order #${orderRef}</div>
+                                <div class="order-card-id">
+                                    Order #${orderRef}
+                                    ${isPreorder ? '<span style="background:#9333ea;color:white;padding:2px 6px;border-radius:4px;font-size:9px;margin-left:6px;">PREORDER</span>' : ''}
+                                </div>
                                 <div class="order-card-date">${formatOrderDate(o.created_at)}</div>
                             </div>
                             <span class="status-pill ${statusClass}">${escapeHtml(o.status)}</span>
                         </div>
 
-                        <div class="order-delivery-row">
-                            <i class="fa-solid fa-truck"></i>
-                            <span>${o.estimated_delivery ? 'Estimated delivery: ' + formatOrderDate(o.estimated_delivery) : 'Estimated delivery: to be confirmed'}</span>
-                        </div>
+                        ${deliveryRow}
 
                         <div class="order-items-list">${itemsHtml}</div>
 
-                        <div class="order-total-line">
-                            <span>Total</span>
-                            <span>GHS ${parseFloat(o.total).toFixed(2)}</span>
-                        </div>
+                        ${totalLine}
 
                         ${o.admin_notes ? `
                             <div class="order-notes-box">
