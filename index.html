@@ -5265,8 +5265,22 @@
                 alert('Payment couldn\'t load. Please check your internet connection and refresh the page, then try again.');
                 return;
             }
+            if (!amount || isNaN(amount) || amount <= 0) {
+                alert('There was a problem with the balance amount on this order. Please contact us so we can fix it.');
+                return;
+            }
+
             const cleanPhoneForEmail = (phone || '').replace(/[^0-9]/g, '');
-            const email = currentUser?.email || (cleanPhoneForEmail + '@bbaby.shop');
+            let email = currentUser?.email || (cleanPhoneForEmail + '@bbaby.shop');
+
+            // Guard: fall back to a guaranteed-valid email if neither the
+            // account nor the order phone produced a usable one — this is
+            // what was silently breaking the popup before.
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                email = 'order-' + orderId.slice(0, 8) + '@bbaby.shop';
+            }
+
             const ref = 'BAL-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
 
             try {
@@ -5302,8 +5316,8 @@
                 });
                 handler.openIframe();
             } catch (err) {
-                console.error('Paystack failed to open:', err);
-                alert('Payment popup failed to open. Please refresh the page and try again.');
+                console.error('Paystack failed to open:', err?.message || err);
+                alert('Payment popup failed to open: ' + (err?.message || 'unknown error') + '\nPlease refresh the page and try again, or contact us if this continues.');
             }
         }
 
