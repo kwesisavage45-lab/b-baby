@@ -2358,6 +2358,9 @@
                 <button class="col-cat-btn" onclick="filterCollection('Other Accessories', this)">
                     <i class="fa-solid fa-star"></i> Accessories
                 </button>
+                <button class="col-cat-btn" onclick="window.location.href='preorder.html'">
+                    <i class="fa-solid fa-hourglass-half"></i> Preorder
+                </button>
             </div>
 
             <!-- Collections heading & Search -->
@@ -2882,6 +2885,7 @@
             <li><a href="#">Bags <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Purses <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Other Accessories <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="preorder.html" class="cat-sheet-external" style="color: var(--primary-color); font-weight: 700;"><i class="fa-solid fa-hourglass-half"></i>&nbsp; Preorder <i class="fa-solid fa-chevron-right"></i></a></li>
         </ul>
     </div>
 
@@ -3978,7 +3982,7 @@
                     renderPaginatedProducts();
                     restoreWishlistStates();
                 } catch (err) {
-                    console.error('Failed to load products:', err);
+                    console.error('Failed to load products:', err?.message || err?.error_description || JSON.stringify(err));
                     // Only show error if grid is empty
                     if (!grid.children.length || grid.querySelector('.skeleton-card')) {
                         grid.innerHTML = `
@@ -4071,7 +4075,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             loadHomeProducts();
 
-            document.querySelectorAll('.cat-sheet-list a, .footer-col ul li a').forEach(tab => {
+            document.querySelectorAll('.cat-sheet-list a:not(.cat-sheet-external), .footer-col ul li a').forEach(tab => {
                 const parentCol = tab.closest('.footer-col');
                 const isShopLink = parentCol && parentCol.querySelector('h4')?.textContent === 'Shop';
                 const isCatSheetLink = tab.closest('.cat-sheet-list');
@@ -5251,6 +5255,58 @@
         // Stores pending order data while Paystack popup is open
         let _pendingOrderData = null;
 
+        // Customer pays their own preorder balance. Only shown once the
+        // admin has flagged the order as balance_requested. On success,
+        // confirmation goes through the pay_preorder_balance() database
+        // function rather than a direct update (customers don't have
+        // general write access to orders).
+        function payPreorderBalance(orderId, amount, phone) {
+            if (typeof PaystackPop === 'undefined') {
+                alert('Payment couldn\'t load. Please check your internet connection and refresh the page, then try again.');
+                return;
+            }
+            const cleanPhoneForEmail = (phone || '').replace(/[^0-9]/g, '');
+            const email = currentUser?.email || (cleanPhoneForEmail + '@bbaby.shop');
+            const ref = 'BAL-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+
+            try {
+                const handler = PaystackPop.setup({
+                    key: PAYSTACK_PUBLIC_KEY,
+                    email: email,
+                    amount: Math.round(amount * 100),
+                    currency: 'GHS',
+                    ref: ref,
+                    metadata: {
+                        custom_fields: [
+                            { display_name: 'Order ID', variable_name: 'order_id', value: orderId },
+                            { display_name: 'Payment Type', variable_name: 'payment_type', value: 'Preorder Balance' }
+                        ]
+                    },
+                    channels: ['card', 'mobile_money', 'bank', 'ussd', 'bank_transfer'],
+                    onClose: function() {
+                        console.log('Balance payment popup closed without payment.');
+                    },
+                    callback: async function(response) {
+                        const { error } = await _db.rpc('pay_preorder_balance', {
+                            p_order_id: orderId,
+                            p_paystack_ref: response.reference
+                        });
+                        if (error) {
+                            console.error('Failed to confirm balance payment:', error.message || error);
+                            alert('Payment went through, but we couldn\'t update your order automatically. Please contact us with reference: ' + response.reference);
+                        } else {
+                            alert('Balance payment successful! Your order is now fully paid.');
+                        }
+                        renderOrdersPage();
+                    }
+                });
+                handler.openIframe();
+            } catch (err) {
+                console.error('Paystack failed to open:', err);
+                alert('Payment popup failed to open. Please refresh the page and try again.');
+            }
+        }
+
         function submitOrder() {
             const name    = document.getElementById('order-name').value.trim();
             const phone   = document.getElementById('order-phone').value.trim();
@@ -5716,6 +5772,12 @@
                                 <strong><i class="fa-solid fa-comment-dots"></i> Note from B-BABY</strong>
                                 ${escapeHtml(o.admin_notes)}
                             </div>
+                        ` : ''}
+
+                        ${isPreorder && balanceDue > 0 && o.balance_requested && !o.balance_paid ? `
+                            <button class="auth-submit" style="margin-top:12px; width:100%; background:#e53e3e;" onclick="payPreorderBalance('${o.id}', ${balanceDue}, '${escapeHtml(o.phone || '')}')">
+                                <i class="fa-solid fa-credit-card"></i> Pay Due Balance (GHS ${balanceDue.toFixed(2)})
+                            </button>
                         ` : ''}
                     </div>
                 `;
