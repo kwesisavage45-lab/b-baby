@@ -1701,6 +1701,7 @@
 
             const needsBalance = isPreorder && balanceDue > 0;
             const balancePaid = o.balance_paid === true;
+            const balanceRequested = o.balance_requested === true;
 
             return `
             <div class="order-card status-${statusClass}">
@@ -1728,10 +1729,15 @@
                             ${statusOptions}
                         </select>
                     </div>
-                    ${needsBalance && !balancePaid ? `
-                        <button class="toolbar-btn" style="width:100%; margin-top:8px; background:#e53e3e;" onclick="triggerBalancePayment('${o.id}', '${o.customer_name}', '${o.customer_phone || o.phone}', ${balanceDue})">
-                            <i class="fa-solid fa-credit-card"></i> Pay Outstanding Balance (GHS ${balanceDue.toFixed(2)})
+                    ${needsBalance && !balancePaid && !balanceRequested ? `
+                        <button class="toolbar-btn" style="width:100%; margin-top:8px; background:#e53e3e;" onclick="requestBalancePayment('${o.id}')">
+                            <i class="fa-solid fa-bell"></i> Request Balance Payment (GHS ${balanceDue.toFixed(2)})
                         </button>
+                    ` : needsBalance && !balancePaid && balanceRequested ? `
+                        <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:8px 12px;">
+                            <span style="color:#c2410c; font-weight:600; font-size:13px;"><i class="fa-solid fa-clock"></i> Awaiting customer payment (GHS ${balanceDue.toFixed(2)})</span>
+                            <button style="background:none; border:none; color:#999; font-size:12px; cursor:pointer; text-decoration:underline;" onclick="cancelBalanceRequest('${o.id}')">Cancel</button>
+                        </div>
                     ` : needsBalance && balancePaid ? `
                         <div style="margin-top:8px; color:var(--success); font-weight:700; font-size:13px; text-align:center;">
                             <i class="fa-solid fa-check-circle"></i> Balance Fully Paid
@@ -1745,9 +1751,8 @@
 
     async function handleStatusChange(id, status, needsBalance, balancePaid, balanceDue) {
         if (status === 'Delivered' && needsBalance && !balancePaid) {
-            if (confirm(`This order has an outstanding balance of GHS ${balanceDue.toFixed(2)}. The customer must pay via Paystack before the order can be marked as Delivered.\n\nWould you like to trigger the payment now?`)) {
-                const order = allOrders.find(o => o.id === id);
-                triggerBalancePayment(id, order.customer_name, order.customer_phone || order.phone, balanceDue);
+            if (confirm(`This order has an outstanding balance of GHS ${balanceDue.toFixed(2)}. The customer needs to pay this before the order can be marked as Delivered.\n\nRequest the balance payment from the customer now?`)) {
+                requestBalancePayment(id);
             }
             // Reset the select to previous value
             loadOrders();
@@ -1762,46 +1767,20 @@
         else { showToast('Status updated', 'success'); loadOrders(); }
     }
 
-    // PAYSTACK SDK for Admin Balance Payments
-    const PAYSTACK_PUBLIC_KEY = 'pk_live_1febcdc0f8881fb9843d3688f6bdbdaac049ed43';
+    // Flags the order so the customer sees a "Pay Due Balance" button on their
+    // own My Orders page. No payment happens here — the customer pays on their
+    // own device via Paystack, and the balance is confirmed through a
+    // database function (pay_preorder_balance) once they complete it.
+    async function requestBalancePayment(orderId) {
+        const { error } = await _db.from('orders').update({ balance_requested: true }).eq('id', orderId);
+        if (error) showToast('Failed to request balance payment', 'error');
+        else { showToast('Customer will now see a "Pay Due Balance" button', 'success'); loadOrders(); }
+    }
 
-    function triggerBalancePayment(orderId, name, phone, amount) {
-        if (typeof PaystackPop === 'undefined') {
-            showToast('Paystack SDK not loaded', 'error');
-            return;
-        }
-
-        const email = (phone.replace(/[^0-9]/g, '') || 'customer') + '@bbaby.shop';
-        const ref = 'BAL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-
-        const handler = PaystackPop.setup({
-            key: PAYSTACK_PUBLIC_KEY,
-            email: email,
-            amount: Math.round(amount * 100),
-            currency: 'GHS',
-            ref: ref,
-            metadata: {
-                custom_fields: [
-                    { display_name: 'Customer Name', variable_name: 'customer_name', value: name },
-                    { display_name: 'Order ID', variable_name: 'order_id', value: orderId },
-                    { display_name: 'Payment Type', variable_name: 'payment_type', value: 'Balance Payment' }
-                ]
-            },
-            callback: async function(response) {
-                showToast('Balance payment successful!', 'success');
-                // Update order in database
-                const { error } = await _db.from('orders').update({ 
-                    balance_paid: true,
-                    balance_due: 0,
-                    amount_paid: amount + (allOrders.find(o => o.id === orderId).amount_paid || 0),
-                    status: 'Processing' // Move to processing after balance paid
-                }).eq('id', orderId);
-                
-                if (error) showToast('Failed to update order balance', 'error');
-                loadOrders();
-            }
-        });
-        handler.openIframe();
+    async function cancelBalanceRequest(orderId) {
+        const { error } = await _db.from('orders').update({ balance_requested: false }).eq('id', orderId);
+        if (error) showToast('Failed to cancel request', 'error');
+        else { showToast('Balance payment request cancelled', 'success'); loadOrders(); }
     }
 
     function filterOrders() { renderOrdersList(); }
