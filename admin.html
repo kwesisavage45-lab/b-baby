@@ -1784,10 +1784,38 @@
     }
 
     function filterOrders() { renderOrdersList(); }
-    function resetOrderFilters() {
+
+    async function resetOrderFilters() {
+        const isPreorderOf = o => o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
+        const modeOrders = allOrders.filter(o => currentOrderMode === 'preorder' ? isPreorderOf(o) : !isPreorderOf(o));
+        const modeLabel = currentOrderMode === 'preorder' ? 'preorder' : 'regular';
+
+        if (modeOrders.length === 0) {
+            showToast(`No ${modeLabel} order history to clear`, 'error');
+            return;
+        }
+
+        if (!confirm(`This will PERMANENTLY DELETE all ${modeOrders.length} ${modeLabel} order(s) from the database. This cannot be undone.\n\nContinue?`)) {
+            return;
+        }
+
+        const typed = prompt(`Type DELETE to confirm you want to erase all ${modeLabel} order history:`);
+        if (typed !== 'DELETE') {
+            showToast('Order history not cleared', '');
+            return;
+        }
+
+        const idsToDelete = modeOrders.map(o => o.id);
+        const { error } = await _db.from('orders').delete().in('id', idsToDelete);
+        if (error) {
+            showToast('Failed to clear order history', 'error');
+            return;
+        }
+
         document.getElementById('order-search').value = '';
         document.getElementById('order-status-filter').value = '';
-        renderOrdersList();
+        showToast(`All ${modeLabel} order history cleared`, 'success');
+        loadOrders();
     }
 
     function _buildOrdersRows() {
