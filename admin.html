@@ -405,34 +405,96 @@
             justify-content: space-between;
         }
 
-        .products-list { display: flex; flex-direction: column; gap: 12px; }
+        .products-list { display: grid; gap: 14px; }
+
+        .product-library-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 30px 0 14px;
+        }
+
+        .product-library-heading { display: flex; align-items: center; gap: 10px; }
+        .product-library-heading i { color: var(--primary); font-size: 18px; }
+        .product-library-heading h3 { font-size: 18px; margin: 0; color: var(--text); }
+        .product-library-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+        .product-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+        .product-search { position: relative; flex: 1; min-width: 180px; }
+        .product-search i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+        .product-search input, .product-filter {
+            width: 100%;
+            padding: 11px 12px 11px 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+        }
+        .product-filter { width: auto; min-width: 150px; padding-left: 12px; }
+        .product-search input:focus, .product-filter:focus { border-color: var(--primary); background: #fff; }
 
         .product-item {
-            background: var(--card);
-            border-radius: var(--radius);
+            background: linear-gradient(135deg, #fff 0%, #fffafd 100%);
+            border: 1px solid #f1dfe5;
+            border-radius: 16px;
             padding: 14px;
-            display: flex;
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr) auto auto;
             align-items: center;
             gap: 14px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 14px rgba(93, 35, 55, 0.06);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .product-item:hover { transform: translateY(-2px); border-color: #e7b8c7; box-shadow: 0 8px 22px rgba(93, 35, 55, 0.1); }
+
+        .product-item-thumb { position: relative; width: 72px; height: 82px; }
+        .product-item-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; background: var(--bg); }
+        .product-type-dot { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; right: 5px; top: 5px; }
+        .product-type-dot.preorder { background: #805ad5; }
+
+        .product-item-info { min-width: 0; }
+        .product-item-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+        .product-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+        .product-meta-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 20px; background: #f8f3f5; color: #6f5961; }
+        .product-meta-chip i { color: var(--primary); font-size: 10px; }
+        .product-sizes-line { margin-top: 7px; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-sizes-line strong { color: var(--text); }
+
+        .product-item-price { text-align: right; font-size: 15px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+        .product-item-price small { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); text-decoration: line-through; font-weight: 500; }
+        .action-btns { display: flex; gap: 7px; flex-shrink: 0; }
+
+        .size-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .size-option { position: relative; }
+        .size-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .size-option label { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 9px; background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all .16s ease; }
+        .size-option label:hover { border-color: #d88da4; color: var(--primary); }
+        .size-option input:checked + label { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(181,71,107,.2); }
+        .size-helper { color: var(--muted); font-size: 11px; margin-top: 7px; }
+
+        @media (max-width: 640px) {
+            .product-library-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+            .product-toolbar { align-items: stretch; flex-direction: column; }
+            .product-filter { width: 100%; }
+            .product-item { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 10px; }
+            .product-item-thumb { width: 58px; height: 68px; }
+            .product-item-price { grid-column: 2; grid-row: 2; text-align: left; }
+            .action-btns { grid-column: 3; grid-row: 2; }
         }
 
-        .product-item img {
-            width: 64px;
-            height: 64px;
-            object-fit: cover;
-            border-radius: 8px;
-            flex-shrink: 0;
-            background: var(--bg);
-        }
-
-        .product-item-info { flex: 1; min-width: 0; }
-        .product-item-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .product-item-info span { font-size: 12px; color: var(--muted); }
-
-        .product-item-price { font-size: 15px; font-weight: 700; color: var(--primary); margin-right: 4px; }
-
-        .action-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        
 
         .edit-btn {
             background: #fce8ef;
@@ -913,6 +975,13 @@
             <select id="product-category">
                 <option value="">Select category</option>
                 <option value="Dresses">Dresses</option>
+                <option value="Tops">Tops</option>
+                <option value="Capri Pants">Capri Pants</option>
+                <option value="Joggers">Joggers</option>
+                <option value="Jeans">Jeans</option>
+                <option value="Skirts">Skirts</option>
+                <option value="Wigs">Wigs</option>
+                <option value="Slippers">Slippers</option>
                 <option value="Bags">Bags</option>
                 <option value="Purses">Purses</option>
                 <option value="Other Accessories">Other Accessories</option>
@@ -920,8 +989,16 @@
         </div>
 
         <div class="form-group" style="margin-top:14px">
-            <label>Available Sizes (Optional, comma separated)</label>
-            <input type="text" id="product-sizes" placeholder="e.g. S, M, L, XL, 2-3Y">
+            <label>Available Sizes <span style="font-weight:400;color:var(--muted)">(Optional)</span></label>
+            <div class="size-options" data-size-group="product">
+                <div class="size-option"><input type="checkbox" id="product-size-s" value="S"><label for="product-size-s">S</label></div>
+                <div class="size-option"><input type="checkbox" id="product-size-m" value="M"><label for="product-size-m">M</label></div>
+                <div class="size-option"><input type="checkbox" id="product-size-l" value="L"><label for="product-size-l">L</label></div>
+                <div class="size-option"><input type="checkbox" id="product-size-xl" value="XL"><label for="product-size-xl">XL</label></div>
+                <div class="size-option"><input type="checkbox" id="product-size-xxl" value="XXL"><label for="product-size-xxl">XXL</label></div>
+                <div class="size-option"><input type="checkbox" id="product-size-xxxl" value="XXXL"><label for="product-size-xxxl">XXXL</label></div>
+            </div>
+            <div class="size-helper">Leave all unchecked if this product is Free Size. Shoppers will automatically receive Free Size.</div>
         </div>
 
         <div class="form-group" style="margin-top:14px">
@@ -955,6 +1032,10 @@
                 </select>
             </div>
         </div>
+        <div class="form-group" style="margin-top:14px;">
+            <label>Pieces Left (optional) <span style="font-weight:400;color:#999;">— shows badge on product image</span></label>
+            <input type="number" id="product-stock-count" placeholder="e.g. 8" min="0" step="1">
+        </div>
 
         <div class="form-group" id="product-arrival-group" style="margin-top:14px; display:none;">
             <label>Expected Arrival Days (Optional)</label>
@@ -969,9 +1050,26 @@
     </div>
 
     <!-- PRODUCT LIST -->
-    <div class="section-title">
-        <span>All Products</span>
-        <span id="list-count" style="font-size:13px; color: var(--muted); font-weight:400;"></span>
+    <div class="product-library-head">
+        <div class="product-library-heading">
+            <i class="fa-solid fa-layer-group"></i>
+            <div>
+                <h3>All Products</h3>
+                <p>Manage your catalog, pricing, availability, and sizes.</p>
+            </div>
+        </div>
+        <span id="list-count" style="font-size:13px; color:var(--muted); font-weight:600;"></span>
+    </div>
+
+    <div class="product-toolbar">
+        <div class="product-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="product-search" placeholder="Search products..." oninput="loadProducts()">
+        </div>
+        <select id="product-category-filter" class="product-filter" onchange="loadProducts()">
+            <option value="">All categories</option>
+            <option value="Dresses">Dresses</option><option value="Tops">Tops</option><option value="Capri Pants">Capri Pants</option><option value="Joggers">Joggers</option><option value="Jeans">Jeans</option><option value="Skirts">Skirts</option><option value="Wigs">Wigs</option><option value="Slippers">Slippers</option><option value="Bags">Bags</option><option value="Purses">Purses</option><option value="Other Accessories">Other Accessories</option>
+        </select>
     </div>
 
     <div id="products-list" class="products-list">
@@ -1063,6 +1161,13 @@
                 <label>Category *</label>
                 <select id="edit-product-category">
                     <option value="Dresses">Dresses</option>
+                    <option value="Tops">Tops</option>
+                    <option value="Capri Pants">Capri Pants</option>
+                    <option value="Joggers">Joggers</option>
+                    <option value="Jeans">Jeans</option>
+                    <option value="Skirts">Skirts</option>
+                    <option value="Wigs">Wigs</option>
+                    <option value="Slippers">Slippers</option>
                     <option value="Bags">Bags</option>
                     <option value="Purses">Purses</option>
                     <option value="Other Accessories">Other Accessories</option>
@@ -1070,8 +1175,16 @@
             </div>
 
             <div class="form-group">
-                <label>Available Sizes (Optional)</label>
-                <input type="text" id="edit-product-sizes" placeholder="e.g. S, M, L">
+                <label>Available Sizes <span style="font-weight:400;color:var(--muted)">(Optional)</span></label>
+                <div class="size-options" data-size-group="edit-product">
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-s" value="S"><label for="edit-product-size-s">S</label></div>
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-m" value="M"><label for="edit-product-size-m">M</label></div>
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-l" value="L"><label for="edit-product-size-l">L</label></div>
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-xl" value="XL"><label for="edit-product-size-xl">XL</label></div>
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-xxl" value="XXL"><label for="edit-product-size-xxl">XXL</label></div>
+                    <div class="size-option"><input type="checkbox" id="edit-product-size-xxxl" value="XXXL"><label for="edit-product-size-xxxl">XXXL</label></div>
+                </div>
+                <div class="size-helper">Leave all unchecked if this product is Free Size. Shoppers will automatically receive Free Size.</div>
             </div>
 
             <div class="form-group">
@@ -1104,6 +1217,10 @@
                         <option value="false">Out of Stock</option>
                     </select>
                 </div>
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <label>Pieces Left (optional) <span style="font-weight:400;color:#999;">— shows badge on product image</span></label>
+                <input type="number" id="edit-product-stock-count" placeholder="e.g. 8" min="0" step="1">
             </div>
 
             <div class="form-group" id="edit-product-arrival-group" style="display:none;">
@@ -1321,6 +1438,18 @@
         loadProducts(); // Refresh list to show relevant items
     }
 
+    function getSelectedSizes(group) {
+        return Array.from(document.querySelectorAll(`[data-size-group="${group}"] input[type="checkbox"]:checked`))
+            .map(input => input.value).join(', ');
+    }
+
+    function setSelectedSizes(group, sizes) {
+        const selected = String(sizes || '').split(',').map(size => size.trim().toUpperCase()).filter(Boolean);
+        document.querySelectorAll(`[data-size-group="${group}"] input[type="checkbox"]`).forEach(input => {
+            input.checked = selected.includes(input.value.toUpperCase());
+        });
+    }
+
     // ── ADD PRODUCT ──────────────────────────────────────────
     async function addProduct() {
         const name     = document.getElementById('product-name').value.trim();
@@ -1328,13 +1457,15 @@
         const oldPriceRaw = document.getElementById('product-old-price').value;
         const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
         const category = document.getElementById('product-category').value;
-        const sizes    = document.getElementById('product-sizes').value.trim();
+        const sizes    = getSelectedSizes('product');
         const colors   = document.getElementById('product-colors').value.trim();
         const description = document.getElementById('product-description').value.trim();
         const rating   = parseFloat(document.getElementById('product-rating').value) || null;
         const inStock  = document.getElementById('product-stock').value === 'true';
         const isPreorder = currentProductMode === 'preorder';
         const arrivalDays = parseInt(document.getElementById('product-arrival-days').value) || (isPreorder ? 14 : null);
+        const stockCountRaw = document.getElementById('product-stock-count').value;
+        const stockCount = stockCountRaw !== '' ? parseInt(stockCountRaw) : null;
 
         if (!price)     return showToast('Please enter a price', 'error');
         if (oldPrice && oldPrice <= price) return showToast('Previous price must be higher than the current price', 'error');
@@ -1375,7 +1506,8 @@
                 colors: colors,
                 description: description || null,
                 is_preorder: isPreorder,
-                expected_arrival_days: arrivalDays
+                expected_arrival_days: arrivalDays,
+                stock_count: stockCount
             });
 
             if (insertError) throw insertError;
@@ -1397,13 +1529,14 @@
         document.getElementById('product-price').value = '';
         document.getElementById('product-old-price').value = '';
         document.getElementById('product-category').value = '';
-        document.getElementById('product-sizes').value = '';
+        setSelectedSizes('product', '');
         document.getElementById('product-colors').value = '';
         _colorChips['product'] = [];
         renderColorChips('product');
         document.getElementById('product-description').value = '';
         document.getElementById('product-rating').value = '';
         document.getElementById('product-stock').value = 'true';
+        document.getElementById('product-stock-count').value = '';
         document.getElementById('product-arrival-days').value = '';
         selectedFiles = [];
         renderImageSlider();
@@ -1418,9 +1551,14 @@
         productsData = data || [];
         
         // Filter by current mode
+        const searchTerm = (document.getElementById('product-search')?.value || '').trim().toLowerCase();
+        const categoryFilter = document.getElementById('product-category-filter')?.value || '';
         const filtered = productsData.filter(p => {
             const isPre = p.is_preorder === true;
-            return currentProductMode === 'preorder' ? isPre : !isPre;
+            const modeMatch = currentProductMode === 'preorder' ? isPre : !isPre;
+            const searchMatch = !searchTerm || `${p.name || ''} ${p.category || ''}`.toLowerCase().includes(searchTerm);
+            const categoryMatch = !categoryFilter || p.category === categoryFilter;
+            return modeMatch && searchMatch && categoryMatch;
         });
 
         const count = filtered.length;
@@ -1430,20 +1568,22 @@
         
         list.innerHTML = filtered.map(p => `
             <div class="product-item" id="item-${p.id}">
-                <img src="${p.image_url || ''}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/64?text=No+Img'">
-                <div class="product-item-info">
-                    <h4>${p.name || 'Untitled'}</h4>
-                    <span>${p.category || '—'} &nbsp;•&nbsp; ${p.sizes ? 'Sizes: ' + p.sizes : 'No sizes'} &nbsp;•&nbsp;
-                        <span class="stock-badge ${p.in_stock ? 'in' : 'out'}">${p.in_stock ? 'In Stock' : 'Out of Stock'}</span>
-                    </span>
+                <div class="product-item-thumb">
+                    <img src="${p.image_url || ''}" alt="${p.name || 'Product'}" onerror="this.src='https://via.placeholder.com/72x82?text=No+Img'">
+                    <span class="product-type-dot ${p.is_preorder ? 'preorder' : ''}" title="${p.is_preorder ? 'Preorder' : 'Regular item'}"></span>
                 </div>
-                <span class="product-item-price">
-                    GHS ${parseFloat(p.price).toFixed(2)}
-                    ${p.old_price ? `<span style="font-size:11px;color:var(--muted);text-decoration:line-through;font-weight:500;margin-left:4px;">GHS ${parseFloat(p.old_price).toFixed(2)}</span>` : ''}
-                </span>
+                <div class="product-item-info">
+                    <h4>${p.name || 'Untitled Product'}</h4>
+                    <div class="product-meta">
+                        <span class="product-meta-chip"><i class="fa-solid fa-tag"></i>${p.category || 'Uncategorized'}</span>
+                        <span class="stock-badge ${p.in_stock ? 'in' : 'out'}">${p.in_stock ? 'In Stock' : 'Out of Stock'}</span>
+                    </div>
+                    <div class="product-sizes-line"><strong>Sizes:</strong> ${p.sizes && p.sizes.trim() ? p.sizes : 'Free Size'}</div>
+                </div>
+                <div class="product-item-price">GHS ${parseFloat(p.price || 0).toFixed(2)}${p.old_price ? `<small>GHS ${parseFloat(p.old_price).toFixed(2)}</small>` : ''}</div>
                 <div class="action-btns">
-                    <button class="edit-btn" onclick="openEditModal('${p.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button class="delete-btn" onclick="deleteProduct('${p.id}', '${p.image_url}')"><i class="fa-solid fa-trash"></i></button>
+                    <button class="edit-btn" title="Edit product" onclick="openEditModal('${p.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="delete-btn" title="Delete product" onclick="deleteProduct('${p.id}', '${p.image_url || ''}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
         `).join('');
@@ -1458,7 +1598,7 @@
         document.getElementById('edit-product-price').value = p.price;
         document.getElementById('edit-product-old-price').value = p.old_price || '';
         document.getElementById('edit-product-category').value = p.category;
-        document.getElementById('edit-product-sizes').value = p.sizes || '';
+        setSelectedSizes('edit-product', p.sizes || '');
         document.getElementById('edit-product-colors').value = p.colors || '';
         _colorChips['edit-product'] = parseColorsString(p.colors || '');
         renderColorChips('edit-product');
@@ -1466,6 +1606,7 @@
         document.getElementById('edit-product-description').value = p.description || '';
         document.getElementById('edit-product-rating').value = p.rating || '';
         document.getElementById('edit-product-stock').value = p.in_stock.toString();
+        document.getElementById('edit-product-stock-count').value = p.stock_count != null ? p.stock_count : '';
         
         const editArrivalGroup = document.getElementById('edit-product-arrival-group');
         if (p.is_preorder) {
@@ -1488,7 +1629,7 @@
         const oldPriceRaw = document.getElementById('edit-product-old-price').value;
         const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
         const category = document.getElementById('edit-product-category').value;
-        const sizes    = document.getElementById('edit-product-sizes').value.trim();
+        const sizes    = getSelectedSizes('edit-product');
         const colors   = document.getElementById('edit-product-colors').value.trim();
         const description = document.getElementById('edit-product-description').value.trim();
         const rating   = parseFloat(document.getElementById('edit-product-rating').value) || null;
@@ -1496,6 +1637,8 @@
         const pOriginal = productsData.find(item => item.id === id);
         const isPreorder = pOriginal ? pOriginal.is_preorder : false;
         const arrivalDays = parseInt(document.getElementById('edit-product-arrival-days').value) || (isPreorder ? 14 : null);
+        const editStockCountRaw = document.getElementById('edit-product-stock-count').value;
+        const editStockCount = editStockCountRaw !== '' ? parseInt(editStockCountRaw) : null;
         const fileInput = document.getElementById('edit-image-input');
         const newFile  = fileInput.files[0];
         if (!price || !category) return showToast('Price and Category are required', 'error');
@@ -1524,7 +1667,8 @@
                 in_stock: inStock,
                 image_url: imageUrl,
                 is_preorder: isPreorder,
-                expected_arrival_days: arrivalDays
+                expected_arrival_days: arrivalDays,
+                stock_count: editStockCount
             }).eq('id', id);
             if (error) throw error;
             showToast('Product updated successfully!', 'success');
@@ -1784,38 +1928,10 @@
     }
 
     function filterOrders() { renderOrdersList(); }
-
-    async function resetOrderFilters() {
-        const isPreorderOf = o => o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
-        const modeOrders = allOrders.filter(o => currentOrderMode === 'preorder' ? isPreorderOf(o) : !isPreorderOf(o));
-        const modeLabel = currentOrderMode === 'preorder' ? 'preorder' : 'regular';
-
-        if (modeOrders.length === 0) {
-            showToast(`No ${modeLabel} order history to clear`, 'error');
-            return;
-        }
-
-        if (!confirm(`This will PERMANENTLY DELETE all ${modeOrders.length} ${modeLabel} order(s) from the database. This cannot be undone.\n\nContinue?`)) {
-            return;
-        }
-
-        const typed = prompt(`Type DELETE to confirm you want to erase all ${modeLabel} order history:`);
-        if (typed !== 'DELETE') {
-            showToast('Order history not cleared', '');
-            return;
-        }
-
-        const idsToDelete = modeOrders.map(o => o.id);
-        const { error } = await _db.from('orders').delete().in('id', idsToDelete);
-        if (error) {
-            showToast('Failed to clear order history', 'error');
-            return;
-        }
-
+    function resetOrderFilters() {
         document.getElementById('order-search').value = '';
         document.getElementById('order-status-filter').value = '';
-        showToast(`All ${modeLabel} order history cleared`, 'success');
-        loadOrders();
+        renderOrdersList();
     }
 
     function _buildOrdersRows() {
