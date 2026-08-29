@@ -38,7 +38,7 @@
             background-color: #ffffff;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 150;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
@@ -88,7 +88,7 @@
 
         /* --- HAMBURGER BUTTON (mobile only) --- */
         .hamburger-btn {
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             gap: 5px;
@@ -98,6 +98,10 @@
             padding: 4px;
             width: 34px;
             height: 34px;
+        }
+
+        @media (max-width: 767px) {
+            .hamburger-btn { display: flex; }
         }
 
         .hamburger-btn .bar {
@@ -929,13 +933,13 @@
 
         /* --- BOTTOM NAVIGATION (MOBILE ONLY) --- */
         .bottom-nav {
+            display: none;
             position: fixed;
             bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
             width: auto;
             background-color: #b5476b;
-            display: flex;
             justify-content: space-around;
             align-items: center;
             gap: 2px;
@@ -943,6 +947,10 @@
             border-radius: 50px;
             box-shadow: 0 8px 32px rgba(181,71,107,0.35), 0 2px 8px rgba(0,0,0,0.12);
             z-index: 100;
+        }
+
+        @media (max-width: 767px) {
+            .bottom-nav { display: flex; }
         }
 
         .nav-item {
@@ -1688,10 +1696,17 @@
             border-radius: 20px 20px 0 0;
             z-index: 201;
             padding: 0 0 20px;
-            transition: bottom 0.3s ease;
+            visibility: hidden;
+            pointer-events: none;
+            transition: bottom 0.3s ease, visibility 0s linear 0.3s;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         }
-        .cat-sheet.open { bottom: 88px; /* above floating pill nav */ }
+        .cat-sheet.open {
+            bottom: 88px; /* above floating pill nav */
+            visibility: visible;
+            pointer-events: auto;
+            transition-delay: 0s;
+        }
 
         .cat-sheet-handle {
             width: 36px;
@@ -2275,7 +2290,7 @@
                             <img src="https://res.cloudinary.com/drmxokidg/image/upload/v1783255609/zdqttzmeuuzcptktsmtg.jpg" alt="New Arrivals 1">
                         </div>
                         <div class="hero-slide">
-                            <img src="https://res.cloudinary.com/drmxokidg/image/upload/v1783257594/ysnfsrvifwd7refulkby.jpg" alt="New Arrivals 2">
+                            <img src="https://res.cloudinary.com/drmxokidg/image/upload/v1783255605/iqqwbyvzkygwzaay6kkt.jpg" alt="New Arrivals 2">
                         </div>
                         <div class="hero-slide">
                             <img src="https://res.cloudinary.com/drmxokidg/image/upload/v1783255610/apmh7exhmhznm2fwhiaz.jpg" alt="New Arrivals 3">
@@ -2341,13 +2356,34 @@
         <div id="view-collections" style="display:none;">
 
             <!-- Category Filter Pills -->
-            <div id="collection-category-bar" style="margin-bottom:18px; display:flex; flex-wrap:wrap; gap:8px; padding-bottom:4px;">
+            <div id="collection-category-bar" style="margin-bottom:18px; display:flex; flex-wrap:nowrap; gap:8px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;">
                 <style>#collection-category-bar::-webkit-scrollbar{display:none}</style>
                 <button class="col-cat-btn active" onclick="filterCollection(null, this)">
                     <i class="fa-solid fa-border-all"></i> All
                 </button>
                 <button class="col-cat-btn" onclick="filterCollection('Dresses', this)">
                     <i class="fa-solid fa-shirt"></i> Dresses
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Tops', this)">
+                    <i class="fa-solid fa-shirt"></i> Tops
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Capri Pants', this)">
+                    <i class="fa-solid fa-person"></i> Capri Pants
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Joggers', this)">
+                    <i class="fa-solid fa-person-running"></i> Joggers
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Jeans', this)">
+                    Jeans
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Skirts', this)">
+                    Skirts
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Wigs', this)">
+                    Wigs
+                </button>
+                <button class="col-cat-btn" onclick="filterCollection('Slippers', this)">
+                    <i class="fa-solid fa-shoe-prints"></i> Slippers
                 </button>
                 <button class="col-cat-btn" onclick="filterCollection('Bags', this)">
                     <i class="fa-solid fa-bag-shopping"></i> Bags
@@ -2425,6 +2461,9 @@
                     <h4>Shop</h4>
                     <ul>
                         <li><a href="#">Dresses</a></li>
+                        <li><a href="#">Tops</a></li>
+                        <li><a href="#">Jeans</a></li>
+                        <li><a href="#">Skirts</a></li>
                         <li><a href="#">Bags</a></li>
                         <li><a href="#">Purses</a></li>
                         <li><a href="#">Other Accessories</a></li>
@@ -2882,6 +2921,13 @@
         <ul class="cat-sheet-list">
             <li><a href="#" class="active-cat">All <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Dresses <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Tops <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Capri Pants <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Joggers <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Jeans <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Skirts <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Wigs <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Slippers <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Bags <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Purses <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Other Accessories <i class="fa-solid fa-chevron-right"></i></a></li>
@@ -3866,9 +3912,16 @@
             const images = product.image_urls ? (Array.isArray(product.image_urls) ? product.image_urls : product.image_urls.split(',').map(u => u.trim())) : [img];
             const imagesJson = JSON.stringify(images).replace(/"/g, '&quot;');
             const desc = product.description ? `<p class="product-desc">${product.description}</p>` : '';
-            const sizes  = (product.sizes  && product.sizes.trim())  ? product.sizes.split(',').map(s => s.trim()).filter(Boolean)  : ['One Size'];
+            // Products without admin-assigned sizes are automatically Free Size.
+            const sizes  = (product.sizes  && product.sizes.trim())  ? product.sizes.split(',').map(s => s.trim()).filter(Boolean)  : ['Free Size'];
             const colors = parseProductColors(product.colors);
             const productJson = JSON.stringify({ id: product.id, name: product.name, price: product.price, img, sizes, colors }).replace(/"/g, '&quot;');
+
+            const stockCount = product.stock_count != null ? parseInt(product.stock_count) : null;
+            const showPiecesLeft = stockCount !== null && stockCount > 0;
+            const piecesLeftBadge = showPiecesLeft
+                ? `<span style="position:absolute;bottom:8px;left:8px;background:${stockCount <= 5 ? '#e53e3e' : 'rgba(30,30,30,0.72)'};color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.3px;">${stockCount} pc${stockCount === 1 ? '' : 's'} left</span>`
+                : '';
 
             return `
                 <div class="product-card">
@@ -3877,7 +3930,8 @@
                         ${images.length > 1 ? `<div style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-images" style="margin-right: 4px;"></i>${images.length}</div>` : ''}
                         <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-regular fa-heart"></i></button>
                         ${product.rating ? `<span class="rating-badge"><i class="fa-solid fa-star"></i> ${rating}</span>` : ''}
-                        ${oldPrice ? `<span style="position:absolute;bottom:8px;left:8px;background:var(--primary-color);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.5px;">SALE</span>` : ''}
+                        ${oldPrice ? `<span style="position:absolute;bottom:8px;left:8px;background:var(--primary-color);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.5px;">SALE</span>` : piecesLeftBadge}
+                        ${oldPrice && showPiecesLeft ? `<span style="position:absolute;bottom:34px;left:8px;background:${stockCount <= 5 ? '#e53e3e' : 'rgba(30,30,30,0.72)'};color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.3px;">${stockCount} pc${stockCount === 1 ? '' : 's'} left</span>` : ''}
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">${product.name}</h3>
@@ -4073,6 +4127,9 @@
 
         // Defer startup until all scripts are parsed
         window.addEventListener('DOMContentLoaded', function() {
+            // Always start with the pink bottom navbar visible and the
+            // collection categories collapsed until Categories is clicked.
+            closeCatSheet();
             loadHomeProducts();
 
             document.querySelectorAll('.cat-sheet-list a:not(.cat-sheet-external), .footer-col ul li a').forEach(tab => {
@@ -4159,14 +4216,14 @@
 
             // Only offer the UK-number view if at least one size on this product maps to one
             const hasUKMapping = sizes.some(s => sizeToUKNumber(s));
-            toggle.style.display = hasUKMapping && !(sizes.length === 1 && sizes[0] === 'One Size') ? 'flex' : 'none';
+            toggle.style.display = hasUKMapping && !(sizes.length === 1 && sizes[0] === 'Free Size') ? 'flex' : 'none';
             if (!hasUKMapping) _poSizeMode = 'standard';
             document.querySelectorAll('#po-size-toggle button').forEach(b => {
                 b.classList.toggle('active', b.dataset.mode === _poSizeMode);
             });
 
             sizeWrap.innerHTML = sizes.map(s => {
-                const isOneSize = sizes.length === 1 && s === 'One Size';
+                const isFreeSize = sizes.length === 1 && s === 'Free Size';
                 const isSelected = _poSelectedSize === s;
                 const ukValue = sizeToUKNumber(s);
                 // The data-size / value passed to selectPoSize is always the ORIGINAL
@@ -4175,7 +4232,7 @@
                 if (_poSizeMode === 'uk' && ukValue) {
                     label = `${ukValue}<span class="po-chip-sub">${s}</span>`;
                 }
-                return `<div class="po-chip ${isOneSize ? 'one-size selected' : ''} ${isSelected ? 'selected' : ''}" data-size="${s}" onclick="${isOneSize ? '' : `selectPoSize('${s.replace(/'/g, "\\'")}', this)`}">${label}</div>`;
+                return `<div class="po-chip ${isFreeSize ? 'one-size selected' : ''} ${isSelected ? 'selected' : ''}" data-size="${s}" onclick="${isFreeSize ? '' : `selectPoSize('${s.replace(/'/g, "\\'")}', this)`}">${label}</div>`;
             }).join('');
         }
 
@@ -4186,7 +4243,9 @@
 
         function openProductOptions(product, btn) {
             _poProduct = product;
-            _poSelectedSize = (product.sizes && product.sizes.length === 1 && product.sizes[0] === 'One Size') ? 'One Size' : null;
+            // Free Size is selected automatically when no sizes were assigned.
+            const hasAssignedSizes = product.sizes && product.sizes.length && !(product.sizes.length === 1 && product.sizes[0] === 'Free Size');
+            _poSelectedSize = hasAssignedSizes ? null : 'Free Size';
             _poSelectedColor = null;
             _poBtnRef = btn || null;
             _poSizeMode = 'standard';
@@ -4239,7 +4298,9 @@
 
         function confirmAddToCart() {
             const errEl = document.getElementById('po-error');
-            if (!_poSelectedSize) {
+            // A size is only required when the admin assigned selectable sizes.
+            const hasAssignedSizes = _poProduct.sizes && _poProduct.sizes.length && !(_poProduct.sizes.length === 1 && _poProduct.sizes[0] === 'Free Size');
+            if (hasAssignedSizes && !_poSelectedSize) {
                 errEl.textContent = 'Please select a size';
                 errEl.classList.add('show');
                 return;
@@ -5882,9 +5943,15 @@
 
         function openCatSheet(e) {
             e && e.preventDefault();
-            document.getElementById('cat-sheet').classList.add('open');
-            document.getElementById('cat-sheet-overlay').classList.add('open');
-            document.body.style.overflow = 'hidden';
+            const sheet = document.getElementById('cat-sheet');
+            const overlay = document.getElementById('cat-sheet-overlay');
+            const isOpen = sheet.classList.contains('open');
+
+            // The pink navbar remains visible by default; this click toggles
+            // the category sheet above it.
+            sheet.classList.toggle('open', !isOpen);
+            overlay.classList.toggle('open', !isOpen);
+            document.body.style.overflow = isOpen ? '' : 'hidden';
         }
 
         function closeCatSheet() {
