@@ -2335,20 +2335,41 @@
                 <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:65%"></div><div class="skeleton-line" style="width:40%; margin-top:8px"></div></div></div>
             </section>
 
-            <!-- Preorder Notice Banner -->
-            <div style="margin-top: 32px; margin-bottom: 20px; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 2px solid #ddd6fe; border-radius: 16px; padding: 20px; text-align: center; position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 1;">
-                    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(147, 51, 234, 0.15); color: #9333ea; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">
-                        <i class="fa-solid fa-clock"></i> Limited Time
+            <!-- Preorder + Wholesale Promo Cards (side by side) -->
+            <div style="margin-top:32px; margin-bottom:20px; display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+                <!-- Preorder Card -->
+                <div style="background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%); border:2px solid #ddd6fe; border-radius:16px; padding:18px 16px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:relative; z-index:1;">
+                        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(147,51,234,0.15);color:#9333ea;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px;">
+                            <i class="fa-solid fa-clock"></i> Limited Time
+                        </div>
+                        <h3 style="font-size:15px;font-weight:700;color:#7c3aed;margin-bottom:6px;line-height:1.3;">Wanna Shop on Preorder?</h3>
+                        <p style="font-size:12px;color:#6b7280;margin-bottom:14px;line-height:1.5;">Reserve now with flexible payment. Pay full or 50% today!</p>
+                        <a href="preorder.html" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#9333ea 0%,#7c3aed 100%);color:white;padding:10px 18px;border-radius:22px;text-decoration:none;font-weight:700;font-size:12px;box-shadow:0 4px 14px rgba(147,51,234,0.3);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+                            <i class="fa-solid fa-shopping-bag"></i> Browse Preorder
+                        </a>
                     </div>
-                    <h3 style="font-size: 18px; font-weight: 700; color: #7c3aed; margin-bottom: 8px;">Wanna Shop on Preorder?</h3>
-                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px; line-height: 1.5;">Reserve your favorite items now with flexible payment options. Pay in full or 50% today!</p>
-                    <a href="preorder.html" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%); color: white; padding: 12px 28px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 14px; transition: opacity 0.2s; box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        <i class="fa-solid fa-shopping-bag"></i> Browse Preorder Items
-                    </a>
+                    <div style="position:absolute;top:-18px;right:-18px;width:80px;height:80px;background:rgba(147,51,234,0.1);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-24px;left:-24px;width:90px;height:90px;background:rgba(147,51,234,0.07);border-radius:50%;"></div>
                 </div>
-                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(147, 51, 234, 0.1); border-radius: 50%;"></div>
-                <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(147, 51, 234, 0.08); border-radius: 50%;"></div>
+
+                <!-- Wholesale Card -->
+                <div style="background:linear-gradient(135deg,#fdf4ff 0%,#f3e8ff 100%); border:2px solid #e9d5ff; border-radius:16px; padding:18px 16px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:relative; z-index:1;">
+                        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(126,34,206,0.14);color:#7e22ce;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px;">
+                            <i class="fa-solid fa-boxes-stacked"></i> Bulk Deal
+                        </div>
+                        <h3 style="font-size:15px;font-weight:700;color:#6b21a8;margin-bottom:6px;line-height:1.3;">Wanna Shop Wholesale?</h3>
+                        <p style="font-size:12px;color:#6b7280;margin-bottom:14px;line-height:1.5;">Buy 5+ pieces at exclusive wholesale prices. Perfect for resellers!</p>
+                        <button onclick="showPage('wholesale', event)" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#7e22ce 0%,#6b21a8 100%);color:white;padding:10px 18px;border-radius:22px;border:none;font-weight:700;font-size:12px;box-shadow:0 4px 14px rgba(107,33,168,0.3);cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+                            <i class="fa-solid fa-boxes-stacked"></i> Shop Wholesale
+                        </button>
+                    </div>
+                    <div style="position:absolute;top:-18px;right:-18px;width:80px;height:80px;background:rgba(126,34,206,0.09);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-24px;left:-24px;width:90px;height:90px;background:rgba(126,34,206,0.06);border-radius:50%;"></div>
+                </div>
+
             </div>
         </div>
 
@@ -2367,17 +2388,8 @@
                 <button class="col-cat-btn" onclick="filterCollection('Tops', this)">
                     <i class="fa-solid fa-shirt"></i> Tops
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Capri Pants', this)">
-                    <i class="fa-solid fa-person"></i> Capri Pants
-                </button>
-                <button class="col-cat-btn" onclick="filterCollection('Joggers', this)">
-                    <i class="fa-solid fa-person-running"></i> Joggers
-                </button>
-                <button class="col-cat-btn" onclick="filterCollection('Jeans', this)">
-                    Jeans
-                </button>
-                <button class="col-cat-btn" onclick="filterCollection('Skirts', this)">
-                    Skirts
+                <button class="col-cat-btn" onclick="filterCollection('Bottoms', this)">
+                    <i class="fa-solid fa-person"></i> Bottoms
                 </button>
                 <button class="col-cat-btn" onclick="filterCollection('Wigs', this)">
                     Wigs
@@ -2462,8 +2474,7 @@
                     <ul>
                         <li><a href="#">Dresses</a></li>
                         <li><a href="#">Tops</a></li>
-                        <li><a href="#">Jeans</a></li>
-                        <li><a href="#">Skirts</a></li>
+                        <li><a href="#">Bottoms</a></li>
                         <li><a href="#">Bags</a></li>
                         <li><a href="#">Purses</a></li>
                         <li><a href="#">Other Accessories</a></li>
@@ -2582,6 +2593,11 @@
                 <span class="menu-label">Contact</span>
                 <i class="fa-solid fa-chevron-right menu-chevron"></i>
             </a>
+            <a href="#" class="menu-nav-item" onclick="showPage('reviews', event)">
+                <i class="fa-regular fa-star"></i>
+                <span class="menu-label">Customer Reviews</span>
+                <i class="fa-solid fa-chevron-right menu-chevron"></i>
+            </a>
         </nav>
 
         <!-- Auth section in hamburger -->
@@ -2678,6 +2694,30 @@
                     <li><i class="fa-solid fa-check"></i> Dedicated customer support</li>
                 </ul>
             </div>
+        </div>
+    </div>
+
+    <!-- Wholesale Page -->
+    <div class="page-overlay" id="page-wholesale">
+        <div class="page-header">
+            <button class="page-back-btn" onclick="closePage('wholesale')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2>Shop Wholesale</h2>
+            <a href="#" onclick="openWsCart(event)" style="margin-left:auto;position:relative;color:var(--text-dark);font-size:19px;text-decoration:none;">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span class="ws-cart-badge" style="display:none;position:absolute;top:-8px;right:-10px;background:#6b21a8;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;">0</span>
+            </a>
+        </div>
+        <div class="page-body">
+            <div style="background:linear-gradient(135deg,#f3e8ff 0%,#fdf4ff 100%);border:1.5px solid #e9d5ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;">
+                <div style="font-size:14px;font-weight:700;color:#6b21a8;margin-bottom:4px;"><i class="fa-solid fa-boxes-stacked"></i>&nbsp; Buy More, Save More</div>
+                <p style="font-size:12.5px;color:#6b7280;line-height:1.6;margin:0;">Shop at exclusive wholesale prices — perfect for resellers. Minimum order is <strong>5 pieces per item</strong>. Add items to your wholesale cart and checkout separately from your regular order.</p>
+            </div>
+            <section class="product-grid" id="wholesale-product-grid">
+                <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:80%"></div><div class="skeleton-line" style="width:50%; margin-top:8px"></div></div></div>
+                <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:70%"></div><div class="skeleton-line" style="width:45%; margin-top:8px"></div></div></div>
+                <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:75%"></div><div class="skeleton-line" style="width:55%; margin-top:8px"></div></div></div>
+                <div class="product-card skeleton-card"><div class="image-wrapper skeleton-img"></div><div class="product-info"><div class="skeleton-line" style="width:65%"></div><div class="skeleton-line" style="width:40%; margin-top:8px"></div></div></div>
+            </section>
         </div>
     </div>
 
@@ -2922,10 +2962,7 @@
             <li><a href="#" class="active-cat">All <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Dresses <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Tops <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Capri Pants <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Joggers <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Jeans <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Skirts <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Bottoms <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Wigs <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Slippers <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Bags <i class="fa-solid fa-chevron-right"></i></a></li>
@@ -2980,6 +3017,25 @@
                 <span id="cart-total">GHS 0.00</span>
             </div>
             <button class="checkout-btn" onclick="handleCheckout()">Proceed to Checkout &nbsp;<i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ===================== WHOLESALE CART DRAWER ===================== -->
+    <div class="cart-overlay" id="ws-cart-overlay" onclick="closeWsCart()"></div>
+    <div class="cart-drawer" id="ws-cart-drawer">
+        <div class="cart-header">
+            <h2><i class="fa-solid fa-boxes-stacked" style="margin-right:8px; color:#6b21a8"></i>Wholesale Cart</h2>
+            <button class="cart-close-btn" onclick="closeWsCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="ws-cart-items-container">
+            <!-- Items rendered by JS -->
+        </div>
+        <div class="cart-footer" id="ws-cart-footer" style="display:none">
+            <div class="cart-subtotal">
+                <span>Subtotal</span>
+                <span id="ws-cart-total">GHS 0.00</span>
+            </div>
+            <button class="checkout-btn" style="background:#6b21a8;" onclick="handleWsCheckout()">Proceed to Checkout &nbsp;<i class="fa-solid fa-arrow-right"></i></button>
         </div>
     </div>
 
@@ -3175,7 +3231,7 @@
             </div>
 
             <button class="po-confirm-btn" onclick="confirmAddToCart()">
-                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                <i class="fa-solid fa-cart-plus"></i> <span id="po-confirm-btn-text">Add to Cart</span>
             </button>
         </div>
     </div>
@@ -3983,6 +4039,75 @@
                 </div>`;
         }
 
+        // Wholesale product card — shows wholesale price + min-order badge, adds to the separate wholesale cart
+        function renderWholesaleProductCard(product) {
+            const img = product.image_url || 'https://via.placeholder.com/400x533?text=No+Image';
+            const wsPrice = parseFloat(product.ws_price != null ? product.ws_price : product.price).toFixed(2);
+            const retailPrice = product.price ? parseFloat(product.price).toFixed(2) : null;
+            const name = product.name.replace(/'/g, "\'");
+            const images = product.image_urls ? (Array.isArray(product.image_urls) ? product.image_urls : product.image_urls.split(',').map(u => u.trim())) : [img];
+            const imagesJson = JSON.stringify(images).replace(/"/g, '&quot;');
+            const desc = product.description ? `<p class="product-desc">${product.description}</p>` : '';
+            const sizes  = (product.sizes  && product.sizes.trim())  ? product.sizes.split(',').map(s => s.trim()).filter(Boolean)  : ['Free Size'];
+            const colors = parseProductColors(product.colors);
+            // Cart price is the wholesale per-unit price, not the retail price
+            const productJson = JSON.stringify({ id: product.id, name: product.name, price: parseFloat(product.ws_price != null ? product.ws_price : product.price), img, sizes, colors }).replace(/"/g, '&quot;');
+
+            return `
+                <div class="product-card">
+                    <div class="image-wrapper" onclick="openImageLightbox(JSON.parse(this.getAttribute('data-images')), 0)" style="cursor: pointer;" data-images="${imagesJson}">
+                        <img src="${img}" alt="${product.name}" loading="lazy" style="transition: opacity 0.2s;">
+                        ${images.length > 1 ? `<div style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-images" style="margin-right: 4px;"></i>${images.length}</div>` : ''}
+                        <span style="position:absolute;bottom:8px;left:8px;background:#6b21a8;color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.3px;">MIN. 5 PCS</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        ${desc}
+                        <div class="product-footer">
+                            <span class="product-price-wrap">
+                                <span class="product-price" style="color:#6b21a8;">GHS ${wsPrice}<span style="font-size:10px;font-weight:600;color:#9333ea;"> /pc</span></span>
+                                ${retailPrice ? `<span class="product-price-old">GHS ${retailPrice}</span>` : ''}
+                            </span>
+                            <button class="add-to-cart-btn" style="background:#6b21a8;" onclick='openProductOptions(${productJson}, this, true)'>
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        let wholesaleProductsCache = null;
+        async function loadWholesaleProducts() {
+            const grid = document.getElementById('wholesale-product-grid');
+            if (!grid) return;
+
+            if (wholesaleProductsCache) {
+                grid.innerHTML = wholesaleProductsCache.length
+                    ? wholesaleProductsCache.map(renderWholesaleProductCard).join('')
+                    : `<div class="products-empty"><i class="fa-solid fa-boxes-stacked"></i><p>No wholesale products available right now.</p></div>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await _db.from('products').select('*')
+                    .eq('is_wholesale', true).eq('in_stock', true)
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+
+                wholesaleProductsCache = data || [];
+                grid.innerHTML = wholesaleProductsCache.length
+                    ? wholesaleProductsCache.map(renderWholesaleProductCard).join('')
+                    : `<div class="products-empty"><i class="fa-solid fa-boxes-stacked"></i><p>No wholesale products available right now.</p></div>`;
+            } catch (err) {
+                console.error('Failed to load wholesale products:', err?.message || err);
+                grid.innerHTML = `
+                    <div class="products-empty">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>Couldn't load wholesale products.<br>Please check your connection.</p>
+                    </div>`;
+            }
+        }
+
         // Product caching and debouncing
         let productCache = {};
         let loadProductsTimeout = null;
@@ -4012,7 +4137,7 @@
 
             loadProductsTimeout = setTimeout(async () => {
                 try {
-                    let query = _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).order('created_at', { ascending: false });
+                    let query = _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).eq('is_wholesale', false).order('created_at', { ascending: false });
                     if (category) query = query.eq('category', category);
 
                     const { data, error } = await query;
@@ -4241,8 +4366,11 @@
             renderPoSizeChips();
         }
 
-        function openProductOptions(product, btn) {
+        let _poIsWholesale = false;
+
+        function openProductOptions(product, btn, isWholesale) {
             _poProduct = product;
+            _poIsWholesale = !!isWholesale;
             // Free Size is selected automatically when no sizes were assigned.
             const hasAssignedSizes = product.sizes && product.sizes.length && !(product.sizes.length === 1 && product.sizes[0] === 'Free Size');
             _poSelectedSize = hasAssignedSizes ? null : 'Free Size';
@@ -4252,8 +4380,10 @@
 
             document.getElementById('po-img').src = product.img;
             document.getElementById('po-name').textContent = product.name;
-            document.getElementById('po-price').textContent = 'GHS ' + parseFloat(product.price).toFixed(2);
+            document.getElementById('po-price').textContent = 'GHS ' + parseFloat(product.price).toFixed(2) + (_poIsWholesale ? ' / pc · min. 5 pcs' : '');
             document.getElementById('po-error').classList.remove('show');
+            const confirmBtn = document.getElementById('po-confirm-btn-text');
+            if (confirmBtn) confirmBtn.textContent = _poIsWholesale ? 'Add 5 to Wholesale Cart' : 'Add to Cart';
 
             // Sizes (always shown — defaults to "One Size" if admin left it blank)
             renderPoSizeChips();
@@ -4310,7 +4440,11 @@
                 errEl.classList.add('show');
                 return;
             }
-            addToCart(_poBtnRef, _poProduct.name, _poProduct.price, _poProduct.img, _poSelectedSize, _poSelectedColor);
+            if (_poIsWholesale) {
+                addToWsCart(_poBtnRef, _poProduct.name, _poProduct.price, _poProduct.img, _poSelectedSize, _poSelectedColor);
+            } else {
+                addToCart(_poBtnRef, _poProduct.name, _poProduct.price, _poProduct.img, _poSelectedSize, _poSelectedColor);
+            }
             document.getElementById('po-overlay').classList.remove('open');
         }
 
@@ -4396,6 +4530,110 @@
             toast.textContent = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        // ===================== WHOLESALE CART (separate from the regular cart) =====================
+        const WS_MIN_QTY = 5; // minimum pieces per wholesale line item
+
+        let wsCart = [];
+
+        function addToWsCart(btn, name, price, img, size, color) {
+            const key = cartItemKey(name, size, color);
+            const existing = wsCart.find(i => cartItemKey(i.name, i.size, i.color) === key);
+            if (existing) {
+                existing.qty += WS_MIN_QTY;
+            } else {
+                wsCart.push({ name, price, img, qty: WS_MIN_QTY, size: size || null, color: color || null });
+            }
+            updateWsCartUI();
+            const variantText = [size, color].filter(Boolean).join(' / ');
+            showToast(`${name}${variantText ? ' (' + variantText + ')' : ''} added to wholesale cart`);
+
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.style.background = '#f3e8ff';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i>';
+                    btn.style.background = '';
+                }, 1000);
+            }
+        }
+
+        function removeFromWsCart(name, size, color) {
+            const key = cartItemKey(name, size, color);
+            wsCart = wsCart.filter(i => cartItemKey(i.name, i.size, i.color) !== key);
+            updateWsCartUI();
+        }
+
+        function changeWsQty(name, delta, size, color) {
+            const key = cartItemKey(name, size, color);
+            const item = wsCart.find(i => cartItemKey(i.name, i.size, i.color) === key);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty < WS_MIN_QTY) removeFromWsCart(name, size, color);
+            else updateWsCartUI();
+        }
+
+        function updateWsCartUI() {
+            const total = wsCart.reduce((s, i) => s + i.price * i.qty, 0);
+            const totalQty = wsCart.reduce((s, i) => s + i.qty, 0);
+
+            document.querySelectorAll('.ws-cart-badge').forEach(badge => {
+                badge.textContent = totalQty;
+                badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
+            });
+
+            const container = document.getElementById('ws-cart-items-container');
+            const footer = document.getElementById('ws-cart-footer');
+            if (!container || !footer) return;
+
+            if (wsCart.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-empty">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <p>Your wholesale cart is empty<br><span style="font-size:12px;color:#999;">Minimum 5 pcs per item</span></p>
+                    </div>`;
+                footer.style.display = 'none';
+            } else {
+                container.innerHTML = wsCart.map(item => {
+                    const variantText = [item.size, item.color].filter(Boolean).join(' / ');
+                    const sz = (item.size || '').replace(/'/g, "\\'");
+                    const cl = (item.color || '').replace(/'/g, "\\'");
+                    const nm = item.name.replace(/'/g, "\\'");
+                    return `
+                    <div class="cart-item">
+                        <img class="cart-item-img" src="${item.img}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            ${variantText ? `<div style="font-size:11.5px;color:#999;margin-top:1px;">${variantText}</div>` : ''}
+                            <div class="cart-item-price">GHS ${(item.price * item.qty).toFixed(2)}</div>
+                            <div class="cart-item-controls">
+                                <button class="qty-btn" onclick="changeWsQty('${nm}', -1, '${sz}', '${cl}')">−</button>
+                                <span class="qty-value">${item.qty}</span>
+                                <button class="qty-btn" onclick="changeWsQty('${nm}', 1, '${sz}', '${cl}')">+</button>
+                            </div>
+                        </div>
+                        <button class="remove-item-btn" onclick="removeFromWsCart('${nm}', '${sz}', '${cl}')">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;}).join('');
+                document.getElementById('ws-cart-total').textContent = `GHS ${total.toFixed(2)}`;
+                footer.style.display = 'block';
+            }
+        }
+
+        function openWsCart(e) {
+            e && e.preventDefault();
+            document.getElementById('ws-cart-drawer').classList.add('open');
+            document.getElementById('ws-cart-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeWsCart() {
+            document.getElementById('ws-cart-drawer').classList.remove('open');
+            document.getElementById('ws-cart-overlay').classList.remove('open');
+            document.body.style.overflow = '';
         }
 
         // ===================== WISHLIST =====================
@@ -4613,7 +4851,7 @@
             const grid = document.getElementById('home-product-grid');
             if (!grid) return;
             try {
-                const { data, error } = await _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).order('created_at', { ascending: false }).limit(4);
+                const { data, error } = await _db.from('products').select('*').eq('in_stock', true).eq('is_preorder', false).eq('is_wholesale', false).order('created_at', { ascending: false }).limit(4);
                 if (error || !data || data.length === 0) {
                     grid.innerHTML = '<div class="products-empty" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-regular fa-bag-shopping" style="font-size:40px;display:block;margin-bottom:12px;color:#ddd;"></i><p>No products yet.</p></div>';
                     return;
@@ -4709,6 +4947,7 @@
 
         let currentUser = null;
         let pendingCheckout = false;
+        let pendingCheckoutMode = 'regular';
 
         // Check session on load
         _db.auth.getSession().then(({ data }) => {
@@ -4784,6 +5023,8 @@
             // If pending checkout, proceed now
             if (pendingCheckout) {
                 pendingCheckout = false;
+                _checkoutMode = pendingCheckoutMode;
+                pendingCheckoutMode = 'regular';
                 closeAuthModal();
                 setTimeout(openOrderForm, 300);
             } else {
@@ -4791,6 +5032,8 @@
             }
 
             _updateAdminBypassVisibility();
+            // Check if user has an active reward discount
+            setTimeout(checkAndShowRewardsBanner, 800);
         }
 
         function setLoggedOut() {
@@ -5138,7 +5381,12 @@
         }
 
         // ── CHECKOUT GATE ────────────────────────────────
+        // 'regular' | 'wholesale' — which cart the shared order-form modal is currently checking out
+        let _checkoutMode = 'regular';
+        function _activeCart() { return _checkoutMode === 'wholesale' ? wsCart : cart; }
+
         function handleCheckout() {
+            _checkoutMode = 'regular';
             if (!currentUser) {
                 pendingCheckout = true;
                 openAuthModal('login');
@@ -5147,14 +5395,31 @@
             openOrderForm();
         }
 
+        function handleWsCheckout() {
+            _checkoutMode = 'wholesale';
+            if (!wsCart.length) {
+                showToast('Your wholesale cart is empty');
+                _checkoutMode = 'regular';
+                return;
+            }
+            if (!currentUser) {
+                pendingCheckout = true;
+                pendingCheckoutMode = 'wholesale';
+                openAuthModal('login');
+                return;
+            }
+            openOrderForm();
+        }
+
         // ===================== ORDER FORM =====================
         function openOrderForm() {
-            if (!cart.length) {
-                showToast('Your cart is empty');
+            const activeCart = _activeCart();
+            if (!activeCart.length) {
+                showToast(_checkoutMode === 'wholesale' ? 'Your wholesale cart is empty' : 'Your cart is empty');
                 return;
             }
 
-            closeCart();
+            if (_checkoutMode === 'wholesale') closeWsCart(); else closeCart();
 
             // Reset stepper to step 1
             coSetStep(1);
@@ -5175,8 +5440,11 @@
             document.getElementById('order-form-error').classList.remove('show');
 
             // Build order summary
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            document.getElementById('order-summary-box').innerHTML = cart.map(i => `
+            const total = activeCart.reduce((s, i) => s + i.price * i.qty, 0);
+            const wholesaleNotice = _checkoutMode === 'wholesale'
+                ? `<div style="background:#f3e8ff;border:1px solid #e9d5ff;color:#6b21a8;font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i>&nbsp; Wholesale Order</div>`
+                : '';
+            document.getElementById('order-summary-box').innerHTML = wholesaleNotice + activeCart.map(i => `
                 <div class="co-summary-row">
                     <span>${escapeHtml(i.name)} &nbsp;×${i.qty}</span>
                     <span>GHS ${(i.price * i.qty).toFixed(2)}</span>
@@ -5253,8 +5521,9 @@
                                                       return showOrderFormError('Please enter a delivery address');
 
             // Populate step 2 order summary
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const itemLines = cart.map(i => {
+            const activeCart = _activeCart();
+            const total = activeCart.reduce((s, i) => s + i.price * i.qty, 0);
+            const itemLines = activeCart.map(i => {
                 const variant = [i.size, i.color].filter(Boolean).join(' / ');
                 return `<div style="display:flex;justify-content:space-between;"><span>${i.name}${variant ? ' (' + variant + ')' : ''} ×${i.qty}</span><span style="font-weight:600;">GHS ${(i.price*i.qty).toFixed(2)}</span></div>`;
             }).join('');
@@ -5292,12 +5561,13 @@
             const notes   = document.getElementById('order-notes').value.trim();
 
             document.getElementById('order-form-error').classList.remove('show');
+            const activeCart = _activeCart();
             if (!name)  return showOrderFormError('Please enter your full name');
             if (!phone) return showOrderFormError('Please enter a phone number');
             if (_fulfilment === 'delivery' && !address) return showOrderFormError('Please enter a delivery address');
-            if (!cart.length) return showOrderFormError('Your cart is empty');
+            if (!activeCart.length) return showOrderFormError(_checkoutMode === 'wholesale' ? 'Your wholesale cart is empty' : 'Your cart is empty');
 
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const total = activeCart.reduce((s, i) => s + i.price * i.qty, 0);
             _pendingOrderData = { name, phone, address, notes, total, paystackRef: 'ADMIN-BYPASS' };
             _finalizeOrder();
         }
@@ -5398,10 +5668,16 @@
 
             document.getElementById('order-form-error').classList.remove('show');
 
+            const activeCart = _activeCart();
+
             if (!name)  return showOrderFormError('Please enter your full name');
             if (!phone) return showOrderFormError('Please enter a phone number');
             if (_fulfilment === 'delivery' && !address) return showOrderFormError('Please enter a delivery address');
-            if (!cart.length) return showOrderFormError('Your cart is empty');
+            if (!activeCart.length) return showOrderFormError(_checkoutMode === 'wholesale' ? 'Your wholesale cart is empty' : 'Your cart is empty');
+            if (_checkoutMode === 'wholesale') {
+                const totalQty = activeCart.reduce((s, i) => s + i.qty, 0);
+                if (totalQty < WS_MIN_QTY) return showOrderFormError(`Wholesale orders require a minimum of ${WS_MIN_QTY} pieces.`);
+            }
 
             // Guard: Paystack SDK didn't load (blocked, offline, or still loading) —
             // without this check, clicking "Continue to Payment" fails completely silently.
@@ -5409,7 +5685,7 @@
                 return showOrderFormError('Payment couldn\'t load. Please check your internet connection and refresh the page, then try again.');
             }
 
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const total = activeCart.reduce((s, i) => s + i.price * i.qty, 0);
             if (!total || total <= 0) return showOrderFormError('Your order total looks invalid — please refresh and try again.');
             _pendingOrderData = { name, phone, address, notes, total };
 
@@ -5486,7 +5762,9 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Placing order...';
 
-            const items = cart.map(i => ({ name: i.name, price: i.price, qty: i.qty, img: i.img, size: i.size || null, color: i.color || null }));
+            const isWholesaleOrder = _checkoutMode === 'wholesale';
+            const activeCart = _activeCart();
+            const items = activeCart.map(i => ({ name: i.name, price: i.price, qty: i.qty, img: i.img, size: i.size || null, color: i.color || null }));
 
             const payment_info = {
                 method:    'paystack',
@@ -5504,7 +5782,8 @@
                 total,
                 status:         'Pending',
                 payment_method: paystackRef === 'ADMIN-BYPASS' ? 'Admin Bypass' : 'Paystack',
-                payment_info:   JSON.stringify(payment_info)
+                payment_info:   JSON.stringify(payment_info),
+                order_type:     isWholesaleOrder ? 'wholesale' : 'regular'
             }).select().single();
 
             btn.disabled = false;
@@ -5532,9 +5811,16 @@
             coSetStep(3);
             sendOrderEmails({ data, name, phone, address, notes, total, payLine, orderRef });
 
-            cart = [];
-            updateCartUI();
-            closeCart();
+            if (isWholesaleOrder) {
+                wsCart = [];
+                updateWsCartUI();
+                closeWsCart();
+            } else {
+                cart = [];
+                updateCartUI();
+                closeCart();
+            }
+            _checkoutMode = 'regular';
         }
 
 
@@ -5906,6 +6192,9 @@
         function showPage(pageId, e) {
             if (e) e.preventDefault();
             closeMenu();
+            // Reviews can be opened from the mobile menu or footer.
+            // Ensure any previously open page is closed before opening the new one.
+            document.querySelectorAll('.page-overlay').forEach(page => page.classList.remove('open'));
             
             // If navigating to profile/orders/wishlist from a category tab, update active state
             if (e && e.currentTarget && e.currentTarget.classList.contains('category-tab')) {
@@ -5921,6 +6210,7 @@
                     if (pageId === 'wishlist-page') renderWishlistPage();
                     if (pageId === 'orders') renderOrdersPage();
                     if (pageId === 'reviews') initReviewsPage();
+                    if (pageId === 'wholesale') loadWholesaleProducts();
                 }
             }, 250);
         }
@@ -5967,6 +6257,56 @@
             document.querySelectorAll('#faq-list .faq-item').forEach(i => i.classList.remove('open'));
             if (!wasOpen) item.classList.add('open');
         }
+
+        // ===================== REWARDS DISCOUNT BANNER =====================
+        function checkAndShowRewardsBanner() {
+            if (!currentUser) return;
+            const phone = localStorage.getItem('bbaby_profile_' + currentUser.id) 
+                ? JSON.parse(localStorage.getItem('bbaby_profile_' + currentUser.id) || '{}').phone 
+                : null;
+            if (!phone) return;
+
+            const normalizePhone = (p) => (p || '').replace(/\s+/g,'').replace(/^00233/,'0').replace(/^\+233/,'0');
+            const normalizedPhone = normalizePhone(phone);
+
+            const saved = JSON.parse(localStorage.getItem('bbaby_rewards_v2') || '{}');
+            const entry = saved[normalizedPhone];
+
+            if (entry && entry.discountActive) {
+                showRewardsBanner();
+            }
+        }
+
+        function showRewardsBanner() {
+            const existing = document.getElementById('rewards-discount-banner');
+            if (existing) return; // already showing
+
+            const banner = document.createElement('div');
+            banner.id = 'rewards-discount-banner';
+            banner.innerHTML = `
+                <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#b5476b 0%,#e8748a 100%);color:white;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(181,71,107,0.4);animation:slideDownBanner 0.5s ease;">
+                    <div style="display:flex;align-items:center;gap:12px;flex:1;">
+                        <div style="font-size:28px;">🎁</div>
+                        <div>
+                            <div style="font-size:15px;font-weight:800;letter-spacing:0.3px;">You've earned a GHS 20 discount!</div>
+                            <div style="font-size:12.5px;opacity:0.88;margin-top:2px;">Your loyalty reward is active — mention it at checkout to claim your savings.</div>
+                        </div>
+                    </div>
+                    <button onclick="this.closest('#rewards-discount-banner').remove()" style="background:rgba(255,255,255,0.25);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.2s;" title="Dismiss">✕</button>
+                </div>
+            `;
+            document.body.prepend(banner);
+
+            // Auto-dismiss after 12s
+            setTimeout(() => { if (banner.parentNode) banner.remove(); }, 12000);
+        }
+
+        // Inject animation style
+        (function() {
+            const s = document.createElement('style');
+            s.textContent = `@keyframes slideDownBanner { from { transform: translateY(-100%); opacity:0; } to { transform: translateY(0); opacity:1; } }`;
+            document.head.appendChild(s);
+        })();
 
         // ===================== REVIEWS (Supabase realtime) =====================
         let reviewSelectedRating = 0;
