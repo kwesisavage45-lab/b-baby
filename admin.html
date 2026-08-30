@@ -27,7 +27,7 @@
         header {
             background: var(--primary);
             color: white;
-            padding: 16px 24px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -37,16 +37,22 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.15);
         }
 
-        header h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-        header span { font-size: 12px; opacity: 0.7; }
+        header h1 { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+        header span { font-size: 11px; opacity: 0.7; }
 
-        .header-right { display: flex; align-items: center; gap: 12px; }
+        .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
 
         .product-count {
             background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
+            padding: 3px 9px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .product-count { display: none; }
+            header h1 { font-size: 15px; }
         }
 
         /* LAYOUT */
@@ -584,32 +590,56 @@
         /* TABS */
         .tab-bar {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             background: white;
             border-radius: var(--radius);
             padding: 6px;
             margin-bottom: 20px;
             box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .tab-bar::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            flex: 1;
-            padding: 10px;
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 9px 6px;
             border: none;
             background: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 11.5px;
             font-weight: 700;
             color: var(--muted);
             cursor: pointer;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 4px;
             transition: all 0.15s;
+            white-space: nowrap;
         }
+        .tab-btn i { font-size: 16px; flex-shrink: 0; }
+        .tab-btn span { font-size: 10px; }
 
         .tab-btn.active { background: var(--primary); color: white; }
+
+        @media (min-width: 600px) {
+            .tab-btn {
+                flex-direction: row;
+                font-size: 13px;
+                padding: 9px 12px;
+                gap: 6px;
+            }
+            .tab-btn i { font-size: 14px; }
+            .tab-btn span { font-size: 13px; }
+        }
+
+        @media (max-width: 600px) {
+            .tab-btn { padding: 8px 10px; font-size: 11.5px; gap: 4px; }
+        }
 
         .section-panel { display: none; }
         .section-panel.active { display: block; }
@@ -688,8 +718,13 @@
             border-radius: var(--radius);
             box-shadow: 0 1px 6px rgba(0,0,0,0.06);
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-wrap: nowrap;
         }
+        .order-mode-tabs::-webkit-scrollbar { display: none; }
+        .order-mode-tab { flex-shrink: 0; }
 
         .order-mode-tab {
             border: none;
@@ -1190,22 +1225,22 @@
     <!-- TABS -->
     <div class="tab-bar">
         <button class="tab-btn active" id="tab-btn-products" onclick="switchTab('products')">
-            <i class="fa-solid fa-box"></i> Products
+            <i class="fa-solid fa-box"></i><span>Products</span>
         </button>
         <button class="tab-btn" id="tab-btn-orders" onclick="switchTab('orders')">
-            <i class="fa-solid fa-receipt"></i> Orders
+            <i class="fa-solid fa-receipt"></i><span>Orders</span>
         </button>
         <button class="tab-btn" id="tab-btn-analytics" onclick="switchTab('analytics')">
-            <i class="fa-solid fa-chart-line"></i> Analytics
+            <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
         </button>
         <button class="tab-btn" id="tab-btn-reviews" onclick="switchTab('reviews')">
-            <i class="fa-solid fa-star"></i> Reviews
+            <i class="fa-solid fa-star"></i><span>Reviews</span>
         </button>
         <button class="tab-btn" id="tab-btn-rewards" onclick="switchTab('rewards')">
-            <i class="fa-solid fa-gift"></i> Rewards
+            <i class="fa-solid fa-gift"></i><span>Rewards</span>
         </button>
-        <button class="tab-btn" id="tab-btn-wholesale" onclick="switchTab('wholesale')" style="color:#9333ea;">
-            <i class="fa-solid fa-boxes-stacked"></i> Wholesale
+        <button class="tab-btn" id="tab-btn-wholesale" onclick="switchTab('wholesale')">
+            <i class="fa-solid fa-boxes-stacked"></i><span>Wholesale</span>
         </button>
     </div>
 
@@ -1274,10 +1309,7 @@
                 <option value="">Select category</option>
                 <option value="Dresses">Dresses</option>
                 <option value="Tops">Tops</option>
-                <option value="Capri Pants">Capri Pants</option>
-                <option value="Joggers">Joggers</option>
-                <option value="Jeans">Jeans</option>
-                <option value="Skirts">Skirts</option>
+                <option value="Bottoms">Bottoms</option>
                 <option value="Wigs">Wigs</option>
                 <option value="Slippers">Slippers</option>
                 <option value="Bags">Bags</option>
@@ -1366,7 +1398,7 @@
         </div>
         <select id="product-category-filter" class="product-filter" onchange="loadProducts()">
             <option value="">All categories</option>
-            <option value="Dresses">Dresses</option><option value="Tops">Tops</option><option value="Capri Pants">Capri Pants</option><option value="Joggers">Joggers</option><option value="Jeans">Jeans</option><option value="Skirts">Skirts</option><option value="Wigs">Wigs</option><option value="Slippers">Slippers</option><option value="Bags">Bags</option><option value="Purses">Purses</option><option value="Other Accessories">Other Accessories</option>
+            <option value="Dresses">Dresses</option><option value="Tops">Tops</option><option value="Bottoms">Bottoms</option><option value="Wigs">Wigs</option><option value="Slippers">Slippers</option><option value="Bags">Bags</option><option value="Purses">Purses</option><option value="Other Accessories">Other Accessories</option>
         </select>
     </div>
 
@@ -1643,12 +1675,12 @@
             <h2 style="color:#9333ea;"><i class="fa-solid fa-boxes-stacked"></i> Add Wholesale Product</h2>
 
             <!-- Image Upload -->
-            <div class="upload-zone" id="ws-upload-zone">
-                <input type="file" id="ws-image-input" accept="image/*" multiple>
+            <input type="file" id="ws-image-input" accept="image/*" multiple style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;">
+            <label for="ws-image-input" class="upload-zone" id="ws-upload-zone" style="cursor:pointer;display:block;">
                 <i class="fa-solid fa-images"></i>
                 <p><strong>Tap to choose images</strong></p>
                 <p>Multiple images supported (JPG, PNG, WEBP)</p>
-            </div>
+            </label>
             <div class="image-slider-container" id="ws-image-slider-container" style="display:none;">
                 <div class="image-slider-wrapper"><div class="image-slider" id="ws-image-slider"></div></div>
             </div>
@@ -1664,9 +1696,9 @@
 
             <div class="form-row">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Retail Price (GHS) *</label>
+                    <label>Retail Price (GHS) <span style="font-weight:400;color:var(--muted)">(Optional)</span></label>
                     <input type="number" id="ws-product-price" placeholder="0.00" step="0.01" min="0">
-                    <small style="display:block;margin-top:4px;color:var(--muted);font-size:11px;">Regular unit price (shown slashed)</small>
+                    <small style="display:block;margin-top:4px;color:var(--muted);font-size:11px;">Shown slashed next to wholesale price</small>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Wholesale Price (GHS) * <span style="color:#9333ea;">★</span></label>
@@ -1679,8 +1711,7 @@
                 <label>Category *</label>
                 <select id="ws-product-category">
                     <option value="">Select category</option>
-                    <option>Dresses</option><option>Tops</option><option>Capri Pants</option>
-                    <option>Joggers</option><option>Jeans</option><option>Skirts</option>
+                    <option>Dresses</option><option>Tops</option><option>Bottoms</option>
                     <option>Wigs</option><option>Slippers</option><option>Bags</option>
                     <option>Purses</option><option>Other Accessories</option>
                 </select>
@@ -1799,10 +1830,7 @@
                 <select id="edit-product-category">
                     <option value="Dresses">Dresses</option>
                     <option value="Tops">Tops</option>
-                    <option value="Capri Pants">Capri Pants</option>
-                    <option value="Joggers">Joggers</option>
-                    <option value="Jeans">Jeans</option>
-                    <option value="Skirts">Skirts</option>
+                    <option value="Bottoms">Bottoms</option>
                     <option value="Wigs">Wigs</option>
                     <option value="Slippers">Slippers</option>
                     <option value="Bags">Bags</option>
@@ -1933,6 +1961,7 @@
 
     imageInput.addEventListener('change', function(e) {
         handleFiles(e.target.files);
+        e.target.value = ''; // reset so same file can be picked again
     });
 
     function handleFiles(files) {
@@ -2449,7 +2478,10 @@
             return matchesMode && matchesStatus && matchesSearch;
         });
 
-        document.getElementById('orders-list-count').textContent = `${filtered.length} shown`;
+        const nonTestCount = filtered.filter(o => !o.is_test).length;
+        const testCount = filtered.length - nonTestCount;
+        document.getElementById('orders-list-count').textContent =
+            testCount > 0 ? `${nonTestCount} shown (+ ${testCount} test)` : `${nonTestCount} shown`;
 
         if (!filtered.length) {
             tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:10px;color:#ddd;"></i>No orders found</td></tr>`;
@@ -2731,7 +2763,7 @@
 
     function _buildOrdersRows() {
         const headers = ['Order ID', 'Date', 'Customer', 'Phone', 'Address', 'Total (GHS)', 'Status', 'Items'];
-        const rows = allOrders.map(o => [
+        const rows = allOrders.filter(o => !o.is_test).map(o => [
             o.id,
             new Date(o.created_at).toLocaleString(),
             o.customer_name,
@@ -3138,11 +3170,17 @@
     const wsSliderContainer  = document.getElementById('ws-image-slider-container');
     const wsSlider           = document.getElementById('ws-image-slider');
 
-    wsImageInput.addEventListener('change', e => wsHandleFiles(e.target.files));
-    wsUploadZone.addEventListener('click', () => wsImageInput.click());
+    wsImageInput.addEventListener('change', function(e) {
+        wsHandleFiles(e.target.files);
+        e.target.value = ''; // reset so same file can be picked again
+    });
     wsUploadZone.addEventListener('dragover', e => { e.preventDefault(); wsUploadZone.classList.add('dragover'); });
     wsUploadZone.addEventListener('dragleave', () => wsUploadZone.classList.remove('dragover'));
-    wsUploadZone.addEventListener('drop', e => { e.preventDefault(); wsUploadZone.classList.remove('dragover'); wsHandleFiles(e.dataTransfer.files); });
+    wsUploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        wsUploadZone.classList.remove('dragover');
+        wsHandleFiles(e.dataTransfer.files);
+    });
 
     function wsHandleFiles(files) {
         if (!files.length) return;
@@ -3171,11 +3209,11 @@
             reader.readAsDataURL(file);
             wsSlider.appendChild(item);
         });
-        const addMore = document.createElement('div');
-        addMore.className = 'add-more-image-btn';
-        addMore.innerHTML = `<i class="fa-solid fa-plus"></i><span>Add More</span>`;
-        addMore.onclick = () => wsImageInput.click();
-        wsSlider.appendChild(addMore);
+        const addMoreLabel = document.createElement('label');
+        addMoreLabel.htmlFor = 'ws-image-input';
+        addMoreLabel.className = 'add-more-image-btn';
+        addMoreLabel.innerHTML = `<i class="fa-solid fa-plus"></i><span>Add More</span>`;
+        wsSlider.appendChild(addMoreLabel);
     }
 
     function wsRemoveImage(i) { wsSelectedFiles.splice(i, 1); wsRenderSlider(); }
@@ -3193,9 +3231,8 @@
         const stockCountRaw = document.getElementById('ws-product-stock-count').value;
         const stockCount = stockCountRaw !== '' ? parseInt(stockCountRaw) : null;
 
-        if (!price)    return showToast('Please enter a retail price', 'error');
         if (!wsPrice)  return showToast('Please enter a wholesale price', 'error');
-        if (wsPrice >= price) return showToast('Wholesale price should be lower than retail price', 'error');
+        if (price && wsPrice >= price) return showToast('Wholesale price should be lower than retail price', 'error');
         if (!category) return showToast('Please select a category', 'error');
         if (!wsSelectedFiles.length) return showToast('Please choose at least one image', 'error');
 
@@ -3227,7 +3264,7 @@
             const { error: insertErr } = await _db.from('products').insert({
                 name:         name || 'Wholesale Item',
                 price,
-                old_price:    price,  // retail shown slashed in wholesale view
+                old_price:    price || null,  // retail shown slashed in wholesale view (optional)
                 ws_price:     wsPrice,
                 category,
                 in_stock:     inStock,
