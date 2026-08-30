@@ -982,7 +982,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.4);
-            z-index: 200;
+            z-index: 220;
         }
 
         .cart-overlay.open { display: block; }
@@ -995,7 +995,7 @@
             max-width: 420px;
             height: 100%;
             background: #fff;
-            z-index: 201;
+            z-index: 221;
             display: flex;
             flex-direction: column;
             transition: right 0.3s ease;
@@ -2270,6 +2270,7 @@
             <a href="#" class="category-tab active" onclick="showDesktopPage('home', this)">Home</a>
             <a href="#" class="category-tab" onclick="showDesktopPage('collections', this)">Collections</a>
             <a href="preorder.html" class="category-tab" style="color: var(--primary-color); font-weight: 700;"><i class="fa-solid fa-clock"></i> Preorder</a>
+            <a href="#" class="category-tab" style="color: #6b21a8; font-weight: 700;" onclick="showPage('wholesale', event)"><i class="fa-solid fa-boxes-stacked"></i> Wholesale</a>
             <a href="#" class="category-tab" onclick="showPage('about', event)">About</a>
             <a href="#" class="category-tab" onclick="showPage('contact', event)">Contact</a>
             <a href="#" class="category-tab" onclick="showPage('profile', event)">Profile</a>
@@ -3986,8 +3987,7 @@
                         ${images.length > 1 ? `<div style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-images" style="margin-right: 4px;"></i>${images.length}</div>` : ''}
                         <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-regular fa-heart"></i></button>
                         ${product.rating ? `<span class="rating-badge"><i class="fa-solid fa-star"></i> ${rating}</span>` : ''}
-                        ${oldPrice ? `<span style="position:absolute;bottom:8px;left:8px;background:var(--primary-color);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.5px;">SALE</span>` : piecesLeftBadge}
-                        ${oldPrice && showPiecesLeft ? `<span style="position:absolute;bottom:34px;left:8px;background:${stockCount <= 5 ? '#e53e3e' : 'rgba(30,30,30,0.72)'};color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;letter-spacing:.3px;">${stockCount} pc${stockCount === 1 ? '' : 's'} left</span>` : ''}
+                        ${piecesLeftBadge}
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">${product.name}</h3>
@@ -4442,10 +4442,11 @@
             }
             if (_poIsWholesale) {
                 addToWsCart(_poBtnRef, _poProduct.name, _poProduct.price, _poProduct.img, _poSelectedSize, _poSelectedColor);
+                document.getElementById('po-overlay').classList.remove('open');
             } else {
                 addToCart(_poBtnRef, _poProduct.name, _poProduct.price, _poProduct.img, _poSelectedSize, _poSelectedColor);
+                document.getElementById('po-overlay').classList.remove('open');
             }
-            document.getElementById('po-overlay').classList.remove('open');
         }
 
         function removeFromCart(name, size, color) {
@@ -4467,10 +4468,12 @@
             const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
             const totalQty = cart.reduce((s, i) => s + i.qty, 0);
 
-            // Badge
-            const badge = document.getElementById('cart-badge');
-            badge.textContent = totalQty;
-            badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
+            // Badge — only update if wholesale page is not active (ws cart owns the badge then)
+            if (!document.getElementById('page-wholesale')?.classList.contains('open')) {
+                const badge = document.getElementById('cart-badge');
+                badge.textContent = totalQty;
+                badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
+            }
 
             // Items container
             const container = document.getElementById('cart-items-container');
@@ -4514,6 +4517,11 @@
 
         function openCart(e) {
             e && e.preventDefault();
+            // If the wholesale page is currently open, open the wholesale cart instead
+            if (document.getElementById('page-wholesale')?.classList.contains('open')) {
+                openWsCart();
+                return;
+            }
             document.getElementById('cart-drawer').classList.add('open');
             document.getElementById('cart-overlay').classList.add('open');
             document.body.style.overflow = 'hidden';
@@ -4582,6 +4590,16 @@
                 badge.textContent = totalQty;
                 badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
             });
+
+            // When the wholesale page is open, also reflect ws cart count on the
+            // shared header/nav cart badge so the user always sees their cart total.
+            if (document.getElementById('page-wholesale')?.classList.contains('open')) {
+                const mainBadge = document.getElementById('cart-badge');
+                if (mainBadge) {
+                    mainBadge.textContent = totalQty;
+                    mainBadge.style.display = totalQty > 0 ? 'inline-block' : 'none';
+                }
+            }
 
             const container = document.getElementById('ws-cart-items-container');
             const footer = document.getElementById('ws-cart-footer');
@@ -5783,7 +5801,8 @@
                 status:         'Pending',
                 payment_method: paystackRef === 'ADMIN-BYPASS' ? 'Admin Bypass' : 'Paystack',
                 payment_info:   JSON.stringify(payment_info),
-                order_type:     isWholesaleOrder ? 'wholesale' : 'regular'
+                order_type:     isWholesaleOrder ? 'wholesale' : 'regular',
+                is_test:        isAdminEmail(currentUser?.email)
             }).select().single();
 
             btn.disabled = false;
@@ -5809,7 +5828,9 @@
             `;
 
             coSetStep(3);
-            sendOrderEmails({ data, name, phone, address, notes, total, payLine, orderRef });
+            if (!isAdminEmail(currentUser?.email)) {
+                sendOrderEmails({ data, name, phone, address, notes, total, payLine, orderRef });
+            }
 
             if (isWholesaleOrder) {
                 wsCart = [];
@@ -6210,7 +6231,11 @@
                     if (pageId === 'wishlist-page') renderWishlistPage();
                     if (pageId === 'orders') renderOrdersPage();
                     if (pageId === 'reviews') initReviewsPage();
-                    if (pageId === 'wholesale') loadWholesaleProducts();
+                    if (pageId === 'wholesale') {
+                        loadWholesaleProducts();
+                        // Show ws cart count on the shared header/nav badge
+                        updateWsCartUI();
+                    }
                 }
             }, 250);
         }
@@ -6219,6 +6244,8 @@
             const el = document.getElementById('page-' + pageId);
             if (el) el.classList.remove('open');
             document.body.style.overflow = '';
+            // Restore regular cart badge when leaving the wholesale page
+            if (pageId === 'wholesale') updateCartUI();
         }
 
         // ===================== CATEGORIES SHEET =====================
