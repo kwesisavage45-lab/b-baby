@@ -1436,6 +1436,12 @@
                 </select>
             </div>
             <div class="orders-toolbar-actions">
+                <button class="toolbar-btn outline" id="hide-test-btn" onclick="toggleHideTest()" title="Toggle test orders">
+                    <i class="fa-solid fa-flask"></i> <span id="hide-test-label">Hide Test</span>
+                </button>
+                <button class="toolbar-btn" onclick="loadOrders()" title="Refresh orders">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
                 <button class="toolbar-btn" onclick="downloadOrdersExcel()" title="Download Excel">
                     <i class="fa-solid fa-file-excel"></i> Excel
                 </button>
@@ -2390,6 +2396,21 @@
     // ── ORDERS ───────────────────────────────────────────────
     let allOrders = [];
     let currentOrderMode = 'regular'; // 'regular' or 'preorder'
+    let hideTestOrders = true; // hide test/admin orders by default
+
+    function toggleHideTest() {
+        hideTestOrders = !hideTestOrders;
+        const btn = document.getElementById('hide-test-btn');
+        const label = document.getElementById('hide-test-label');
+        if (hideTestOrders) {
+            btn.classList.remove('active');
+            label.textContent = 'Hide Test';
+        } else {
+            btn.classList.add('active');
+            label.textContent = 'Show Test';
+        }
+        renderOrdersList();
+    }
     
     async function loadOrders() {
         const tbody = document.getElementById('orders-tbody');
@@ -2426,7 +2447,11 @@
             filterSelect.innerHTML = `
                 <option value="">All Statuses</option>
                 <option value="Pending">Pending</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
                 <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
             `;
         } else {
             filterSelect.innerHTML = `
@@ -2458,7 +2483,7 @@
         const statusFilter = document.getElementById('order-status-filter').value;
 
         // Filter orders based on current mode
-        const filtered = allOrders.filter(o => {
+        let filtered = allOrders.filter(o => {
             const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
             const isWholesale = o.order_type === 'wholesale';
             let matchesMode;
@@ -2475,13 +2500,19 @@
                 phone.includes(search) ||
                 orderId.includes(search) ||
                 orderRef.toLowerCase().includes(search);
-            return matchesMode && matchesStatus && matchesSearch;
+            // Respect hide-test toggle
+            const matchesTest = !hideTestOrders || !o.is_test;
+            return matchesMode && matchesStatus && matchesSearch && matchesTest;
         });
 
         const nonTestCount = filtered.filter(o => !o.is_test).length;
         const testCount = filtered.length - nonTestCount;
         document.getElementById('orders-list-count').textContent =
-            testCount > 0 ? `${nonTestCount} shown (+ ${testCount} test)` : `${nonTestCount} shown`;
+            hideTestOrders
+                ? `${nonTestCount} order${nonTestCount !== 1 ? 's' : ''}`
+                : testCount > 0
+                    ? `${nonTestCount} real (+ ${testCount} test)`
+                    : `${nonTestCount} order${nonTestCount !== 1 ? 's' : ''}`;
 
         if (!filtered.length) {
             tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:10px;color:#ddd;"></i>No orders found</td></tr>`;
@@ -2503,7 +2534,11 @@
             // Status select options
             const statusOptions = (currentOrderMode === 'regular' || currentOrderMode === 'wholesale')
                 ? `<option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                   <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>`
+                   <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                   <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                   <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                   <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                   <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>`
                 : `<option value="Preorder - Awaiting Stock" ${o.status === 'Preorder - Awaiting Stock' ? 'selected' : ''}>Preorder - Awaiting Stock</option>
                    <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing (Items Imported)</option>
                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
@@ -2816,6 +2851,33 @@
 
     loadProducts();
 
+    // ── REALTIME: auto-refresh orders when new ones arrive ──────────────
+    (function subscribeToOrders() {
+        _db.channel('admin:orders')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+                const isTest = payload.new?.is_test === true;
+                // Always reload if orders tab is active
+                const ordersPanel = document.getElementById('panel-orders');
+                if (ordersPanel && ordersPanel.classList.contains('active')) {
+                    loadOrders();
+                    if (!isTest) showToast('🛍️ New order received!', 'success');
+                } else {
+                    // Update badge count quietly
+                    _db.from('orders').select('id, is_test').then(({ data }) => {
+                        const real = (data || []).filter(o => !o.is_test).length;
+                        const el = document.getElementById('order-count');
+                        if (el) el.textContent = real + ' orders';
+                    });
+                    if (!isTest) showToast('🛍️ New order received! Click Orders to view.', 'success');
+                }
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, () => {
+                const ordersPanel = document.getElementById('panel-orders');
+                if (ordersPanel && ordersPanel.classList.contains('active')) loadOrders();
+            })
+            .subscribe();
+    })();
+
     // ===================== ANALYTICS =====================
     async function loadAnalytics() {
         // Load orders, products, reviews in parallel
@@ -2829,10 +2891,12 @@
         const products = productsRes.data || [];
         const reviews = reviewsRes.data || [];
 
-        // KPIs
-        const totalRevenue = orders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
+        // KPIs — only count revenue from successful (paid/fulfilled) orders, not cancelled
+        const REVENUE_STATUSES = ['Completed', 'Delivered', 'Processing', 'Shipped', 'Pending'];
+        const paidOrders = orders.filter(o => !o.status || REVENUE_STATUSES.includes(o.status));
+        const totalRevenue = paidOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
         const uniqueCustomers = new Set(orders.map(o => (o.phone || o.customer_name || '').toLowerCase())).size;
-        const avgOrder = orders.length ? totalRevenue / orders.length : 0;
+        const avgOrder = paidOrders.length ? totalRevenue / paidOrders.length : 0;
         const avgRating = reviews.length ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length : 0;
 
         document.getElementById('kpi-total-orders').textContent = orders.length;
@@ -2874,7 +2938,7 @@
         });
         const revenueByDay = {};
         days.forEach(d => revenueByDay[d] = 0);
-        orders.forEach(o => {
+        paidOrders.forEach(o => {
             const day = (o.created_at || '').slice(0, 10);
             if (revenueByDay.hasOwnProperty(day)) revenueByDay[day] += parseFloat(o.total || 0);
         });
@@ -2890,9 +2954,9 @@
             <div style="margin-top:10px;font-size:12px;color:var(--muted);">Total revenue in period: <strong style="color:var(--text);">GHS ${vals.reduce((a,b)=>a+b,0).toFixed(2)}</strong></div>`;
         document.getElementById('chart-revenue').innerHTML = sparkHtml;
 
-        // Top-selling products (from order items)
+        // Top-selling products (from order items — exclude cancelled)
         const productSales = {};
-        orders.forEach(o => {
+        paidOrders.forEach(o => {
             (o.items || []).forEach(item => {
                 const key = item.name || 'Unknown';
                 productSales[key] = (productSales[key] || 0) + (item.qty || item.quantity || 1);
@@ -2993,7 +3057,7 @@
         document.getElementById('rewards-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:22px;"></i><p style="margin-top:10px;">Loading rewards…</p></div>';
 
         // Pull all delivered/completed orders to count purchases
-        const { data: orders, error } = await _db.from('orders').select('id, customer_name, phone, status, created_at').order('created_at', { ascending: true });
+        const { data: orders, error } = await _db.from('orders').select('id, customer_name, phone, status, created_at, is_test').order('created_at', { ascending: true });
         if (error) { document.getElementById('rewards-list').innerHTML = '<p style="color:var(--danger);padding:20px;">Failed to load orders.</p>'; return; }
 
         // Group by phone number (normalize) — exclude test orders
