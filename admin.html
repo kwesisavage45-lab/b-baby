@@ -809,6 +809,40 @@
         }
 
         .toolbar-btn.outline:hover { background: #eee; opacity: 1; }
+        .toolbar-btn.outline.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+        .toolbar-btn.danger { background: var(--danger); color: #fff; }
+
+        /* Mobile: toolbar fits the screen */
+        @media (max-width: 640px) {
+            .orders-toolbar { padding: 12px; gap: 10px; }
+            .orders-toolbar-filters { flex: 1 1 100%; min-width: 0; width: 100%; flex-direction: column; gap: 8px; }
+            .orders-toolbar-filters .search-wrap { min-width: 0; width: 100%; }
+            .orders-toolbar-filters select { width: 100%; }
+            .orders-toolbar-actions { flex: 1 1 100%; width: 100%; flex-shrink: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+            .orders-toolbar-actions .toolbar-btn { grid-column: span 2; width: 100%; min-width: 0; padding: 10px 6px; font-size: 12px; gap: 5px; justify-content: center; }
+            .orders-toolbar-actions .toolbar-btn:nth-child(4),
+            .orders-toolbar-actions .toolbar-btn:nth-child(5) { grid-column: span 3; }
+            .orders-toolbar-actions .toolbar-btn.danger { grid-column: 1 / -1; padding: 11px 6px; font-size: 13px; }
+        }
+        @media (max-width: 340px) {
+            .orders-toolbar-actions .toolbar-btn { grid-column: span 3; }
+        }
+
+        /* RESET HISTORY MODAL */
+        .rh-step { display: none; }
+        .rh-step.show { display: block; }
+        .rh-icon { width: 54px; height: 54px; border-radius: 50%; background: #fdecec; color: var(--danger);
+                   display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 14px; }
+        .rh-text { font-size: 14px; color: var(--text); line-height: 1.55; text-align: center; margin-bottom: 14px; }
+        .rh-note { font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; line-height: 1.5; }
+        .rh-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; margin-bottom: 8px; box-sizing: border-box; }
+        .rh-input:focus { outline: none; border-color: var(--danger); }
+        .rh-error { color: var(--danger); font-size: 13px; min-height: 18px; margin-bottom: 8px; text-align: center; }
+        .rh-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .rh-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .rh-cancel { background: var(--bg); color: var(--text); border: 1.5px solid var(--border) !important; }
+        .rh-confirm { background: var(--danger); color: #fff; }
+        .rh-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
 
         /* ORDER CARDS */
         .order-card {
@@ -1448,8 +1482,11 @@
                 <button class="toolbar-btn" onclick="downloadOrdersPDF()" title="Download PDF">
                     <i class="fa-solid fa-file-pdf"></i> PDF
                 </button>
-                <button class="toolbar-btn outline" onclick="resetOrderFilters()">
-                    <i class="fa-solid fa-rotate-left"></i> Reset
+                <button class="toolbar-btn outline" id="archive-view-btn" onclick="toggleArchivedView()" title="View archived orders">
+                    <i class="fa-solid fa-box-archive"></i> <span id="archive-view-label">Archived</span>
+                </button>
+                <button class="toolbar-btn danger" onclick="openResetHistory()" title="Archive finished orders (kept in the database)">
+                    <i class="fa-solid fa-trash-can-arrow-up"></i> Reset History
                 </button>
             </div>
         </div>
@@ -1803,6 +1840,51 @@
     </div>
     <!-- ===================== /WHOLESALE PANEL ===================== -->
 
+</div>
+
+<!-- RESET ORDER HISTORY MODAL -->
+<div class="modal-overlay" id="reset-history-modal">
+    <div class="modal-content" style="max-width:440px;">
+        <div class="modal-header">
+            <h2>Reset Order History</h2>
+            <button class="close-modal" onclick="closeResetHistory()">&times;</button>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="rh-step" id="rh-step-1">
+            <div class="rh-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <p class="rh-text" id="rh-step1-text"></p>
+            <p class="rh-note">Orders are <b>not deleted</b>. They are archived: removed from this list but kept safely in the database. Customers still see their own orders, and Analytics, Rewards and Excel exports are not affected.</p>
+            <div class="rh-actions">
+                <button class="rh-cancel" onclick="closeResetHistory()">Cancel</button>
+                <button class="rh-confirm" onclick="rhGoStep(2)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="rh-step" id="rh-step-2">
+            <div class="rh-icon"><i class="fa-solid fa-hand"></i></div>
+            <p class="rh-text"><b>Second confirmation.</b><br>Type <b>RESET</b> below to confirm you want to clear the order history list.</p>
+            <input type="text" class="rh-input" id="rh-confirm-word" placeholder="Type RESET" autocomplete="off" oninput="rhCheckWord()">
+            <div class="rh-actions">
+                <button class="rh-cancel" onclick="closeResetHistory()">Cancel</button>
+                <button class="rh-confirm" id="rh-step2-btn" onclick="rhGoStep(3)" disabled>Confirm</button>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="rh-step" id="rh-step-3">
+            <div class="rh-icon"><i class="fa-solid fa-lock"></i></div>
+            <p class="rh-text">Enter your <b>admin password</b> (the one you use to log in) to finish.</p>
+            <input type="password" class="rh-input" id="rh-password" placeholder="Admin password" autocomplete="current-password"
+                   onkeydown="if(event.key==='Enter') rhSubmit()">
+            <div class="rh-error" id="rh-error"></div>
+            <div class="rh-actions">
+                <button class="rh-cancel" onclick="closeResetHistory()">Cancel</button>
+                <button class="rh-confirm" id="rh-submit-btn" onclick="rhSubmit()">Archive Orders</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- EDIT PRODUCT MODAL -->
@@ -2397,6 +2479,9 @@
     let allOrders = [];
     let currentOrderMode = 'regular'; // 'regular' or 'preorder'
     let hideTestOrders = true; // hide test/admin orders by default
+    let showArchivedOrders = false; // false = active orders, true = archived orders only
+    // Only finished orders are archived by a reset; Pending / Processing / Shipped / Preorder stay visible.
+    const ARCHIVABLE_STATUSES = ['Delivered', 'Completed', 'Cancelled'];
 
     function toggleHideTest() {
         hideTestOrders = !hideTestOrders;
@@ -2412,6 +2497,121 @@
         renderOrdersList();
     }
     
+    function toggleArchivedView() {
+        showArchivedOrders = !showArchivedOrders;
+        document.getElementById('archive-view-btn').classList.toggle('active', showArchivedOrders);
+        document.getElementById('archive-view-label').textContent = showArchivedOrders ? 'Active' : 'Archived';
+        const title = document.getElementById('orders-title');
+        if (showArchivedOrders) title.textContent = 'Archived Orders';
+        else setOrderMode(currentOrderMode);
+        updateOrderCount();
+        renderOrdersList();
+    }
+
+    function updateOrderCount() {
+        const n = allOrders.filter(o => !o.is_test && !o.admin_archived_at).length;
+        document.getElementById('order-count').textContent = `${n} orders`;
+    }
+
+    // ── RESET ORDER HISTORY (soft archive, with 2 confirmations + password) ──
+    let _rhIds = [];
+    let _rhAttempts = 0;
+
+    function openResetHistory() {
+        _rhIds = allOrders
+            .filter(o => !o.admin_archived_at && ARCHIVABLE_STATUSES.includes(o.status))
+            .map(o => o.id);
+        if (!_rhIds.length) { showToast('No finished orders to archive.', 'error'); return; }
+        const kept = allOrders.filter(o => !o.admin_archived_at).length - _rhIds.length;
+        document.getElementById('rh-step1-text').innerHTML =
+            `You are about to clear <b>${_rhIds.length}</b> finished order${_rhIds.length !== 1 ? 's' : ''} ` +
+            `(${ARCHIVABLE_STATUSES.join(', ')}) from the admin order history.` +
+            (kept > 0 ? `<br>${kept} open order${kept !== 1 ? 's' : ''} will stay in the list.` : '');
+        _rhAttempts = 0;
+        document.getElementById('rh-confirm-word').value = '';
+        document.getElementById('rh-password').value = '';
+        document.getElementById('rh-error').textContent = '';
+        document.getElementById('rh-step2-btn').disabled = true;
+        rhGoStep(1);
+        document.getElementById('reset-history-modal').classList.add('show');
+    }
+
+    function closeResetHistory() {
+        document.getElementById('reset-history-modal').classList.remove('show');
+        document.getElementById('rh-password').value = '';
+        _rhIds = [];
+    }
+
+    function rhGoStep(n) {
+        [1, 2, 3].forEach(i => document.getElementById('rh-step-' + i).classList.toggle('show', i === n));
+        if (n === 2) setTimeout(() => document.getElementById('rh-confirm-word').focus(), 50);
+        if (n === 3) setTimeout(() => document.getElementById('rh-password').focus(), 50);
+    }
+
+    function rhCheckWord() {
+        const ok = document.getElementById('rh-confirm-word').value.trim().toUpperCase() === 'RESET';
+        document.getElementById('rh-step2-btn').disabled = !ok;
+    }
+
+    async function rhSubmit() {
+        const pwInput = document.getElementById('rh-password');
+        const errEl = document.getElementById('rh-error');
+        const btn = document.getElementById('rh-submit-btn');
+        const password = pwInput.value;
+        errEl.textContent = '';
+        if (!password) { errEl.textContent = 'Please enter your password.'; return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Verifying…';
+        try {
+            // Re-authenticate with a throwaway client so the current admin session is untouched
+            const { data: sess } = await _db.auth.getSession();
+            const me = sess?.session?.user;
+            if (!me || !isAdminEmail(me.email)) throw new Error('Session expired. Please log in again.');
+
+            const verifier = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+            });
+            const { data: v, error: vErr } = await verifier.auth.signInWithPassword({ email: me.email, password });
+            if (vErr || !v?.user || v.user.id !== me.id) {
+                _rhAttempts++;
+                pwInput.value = '';
+                if (_rhAttempts >= 3) {
+                    closeResetHistory();
+                    showToast('Too many wrong attempts. Reset cancelled.', 'error');
+                } else {
+                    errEl.textContent = `Incorrect password. ${3 - _rhAttempts} attempt${3 - _rhAttempts !== 1 ? 's' : ''} left.`;
+                }
+                return;
+            }
+            await verifier.auth.signOut({ scope: 'local' });
+
+            // Password OK: archive (soft delete). Rows stay in the database.
+            const stamp = new Date().toISOString();
+            let archived = 0;
+            for (let i = 0; i < _rhIds.length; i += 50) {
+                const chunk = _rhIds.slice(i, i + 50);
+                const { data, error } = await _db.from('orders')
+                    .update({ admin_archived_at: stamp })
+                    .in('id', chunk)
+                    .select('id');
+                if (error) throw error;
+                archived += (data || []).length;
+            }
+            closeResetHistory();
+            showToast(`✅ ${archived} order${archived !== 1 ? 's' : ''} archived.`, 'success');
+            await loadOrders();
+        } catch (e) {
+            const msg = String(e.message || e);
+            errEl.textContent = /admin_archived_at/.test(msg)
+                ? 'Database is missing the admin_archived_at column. Run the SQL setup first.'
+                : msg;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Archive Orders';
+        }
+    }
+
     async function loadOrders() {
         const tbody = document.getElementById('orders-tbody');
         if (tbody) tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:20px;"></i><p style="margin-top:10px;">Loading orders…</p></td></tr>`;
@@ -2419,8 +2619,7 @@
         if (error) { if (tbody) tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--danger);">Failed to load orders</td></tr>`; return; }
         allOrders = data || [];
         // Exclude test orders from the displayed count
-        const realOrderCount = allOrders.filter(o => !o.is_test).length;
-        document.getElementById('order-count').textContent = `${realOrderCount} orders`;
+        updateOrderCount();
         updateStatusFilter();
         renderOrdersList();
     }
@@ -2502,7 +2701,8 @@
                 orderRef.toLowerCase().includes(search);
             // Respect hide-test toggle
             const matchesTest = !hideTestOrders || !o.is_test;
-            return matchesMode && matchesStatus && matchesSearch && matchesTest;
+            const matchesArchive = showArchivedOrders ? !!o.admin_archived_at : !o.admin_archived_at;
+            return matchesMode && matchesStatus && matchesSearch && matchesTest && matchesArchive;
         });
 
         const nonTestCount = filtered.filter(o => !o.is_test).length;
