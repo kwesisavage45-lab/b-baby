@@ -6488,5 +6488,68 @@
         }
     </script>
 
+
+<!-- ===================== VISITOR TRACKING (feeds Admin → Visitors) ===================== -->
+<script>
+(function () {
+    const db = window._db;
+    if (!db) return;
+
+    // Anonymous, persistent id for this browser
+    let vid;
+    try {
+        vid = localStorage.getItem('bbaby_visitor_id');
+        if (!vid) {
+            vid = (crypto.randomUUID ? crypto.randomUUID() : 'v' + Date.now() + Math.random().toString(16).slice(2));
+            localStorage.setItem('bbaby_visitor_id', vid);
+        }
+    } catch (e) { vid = 'v' + Date.now() + Math.random().toString(16).slice(2); }
+
+    const device = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+    const isAdmin = (email) => {
+        try { return typeof isAdminEmail === 'function' && isAdminEmail(email); } catch (e) { return false; }
+    };
+
+    // One recorded visit per browser session (+ one more when that visitor signs in)
+    async function logVisit(user) {
+        if (user && isAdmin(user.email)) return;              // don't count admins
+        const flag = 'bbaby_visit_' + (user ? 'u_' + user.id : 'guest');
+        try { if (sessionStorage.getItem(flag)) return; sessionStorage.setItem(flag, '1'); } catch (e) {}
+        try {
+            await db.from('site_visits').insert({
+                visitor_id: vid,
+                user_id:    user ? user.id : null,
+                user_email: user ? user.email : null,
+                user_name:  user ? (user.user_metadata?.full_name || null) : null,
+                device
+            });
+        } catch (e) { console.warn('visit log failed', e); }
+    }
+
+    // "Online now" via Realtime presence (nothing stored in the database)
+    let presenceCh = null, lastUser = null;
+    function joinPresence(user) {
+        if (user && isAdmin(user.email)) return;
+        lastUser = user;
+        if (!presenceCh) {
+            presenceCh = db.channel('site:presence', { config: { presence: { key: vid } } });
+            presenceCh.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') presenceCh.track({ name: lastUser?.user_metadata?.full_name || null, at: Date.now() });
+            });
+        } else {
+            presenceCh.track({ name: user?.user_metadata?.full_name || null, at: Date.now() });
+        }
+    }
+
+    db.auth.getSession().then(({ data }) => {
+        const u = data.session ? data.session.user : null;
+        logVisit(u);
+        joinPresence(u);
+    });
+    db.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) { logVisit(session.user); joinPresence(session.user); }
+    });
+})();
+</script>
 </body>
 </html>
