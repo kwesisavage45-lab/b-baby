@@ -1232,7 +1232,41 @@
             font-size: 22px;
             color: var(--primary, #8a2b47);
         }
-    </style>
+    
+        /* ===================== VISITORS ===================== */
+        .vis-live { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--muted); background:var(--card); padding:6px 12px; border-radius:20px; box-shadow:0 1px 6px rgba(0,0,0,.06); }
+        .vis-dot { width:8px; height:8px; border-radius:50%; background:#cbd5e0; }
+        .vis-live.on { color:var(--success); }
+        .vis-live.on .vis-dot { background:var(--success); animation: visPulse 1.6s infinite; }
+        @keyframes visPulse { 0%{box-shadow:0 0 0 0 rgba(56,161,105,.5);} 70%{box-shadow:0 0 0 8px rgba(56,161,105,0);} 100%{box-shadow:0 0 0 0 rgba(56,161,105,0);} }
+        .vis-online { display:flex; align-items:center; gap:16px; background:linear-gradient(135deg,var(--primary),#d96b8c); color:#fff; padding:16px 20px; border-radius:var(--radius); margin-bottom:16px; font-size:14px; }
+        .vis-online-num { font-size:40px; font-weight:800; line-height:1; min-width:48px; text-align:center; }
+        .vis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:20px; }
+        .vis-card { background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:0 2px 10px rgba(0,0,0,.06); transition:transform .2s; }
+        .vis-card.bump { animation: visBump .6s ease; }
+        @keyframes visBump { 0%{transform:scale(1);} 40%{transform:scale(1.03); box-shadow:0 4px 18px rgba(181,71,107,.3);} 100%{transform:scale(1);} }
+        .vis-card-head { font-size:13px; font-weight:700; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+        .vis-card-head small { color:var(--muted); font-weight:500; }
+        .vis-big { font-size:38px; font-weight:800; line-height:1; }
+        .vis-sub { font-size:12px; color:var(--muted); margin-bottom:12px; }
+        .vis-rows > div { display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px solid var(--border); }
+        .vis-rows span { color:var(--muted); }
+        .vis-seg { display:inline-flex; background:var(--bg); border-radius:8px; padding:3px; }
+        .vis-seg button { border:none; background:none; padding:5px 11px; font-size:12px; font-weight:600; color:var(--muted); border-radius:6px; cursor:pointer; }
+        .vis-seg button.active { background:var(--primary); color:#fff; }
+        .vis-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
+        .vis-row:last-child { border-bottom:none; }
+        .vis-avatar { width:32px; height:32px; border-radius:50%; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+        .vis-avatar.guest { background:#edf2f7; color:#718096; }
+        .vis-row-main { flex:1; min-width:0; }
+        .vis-row-name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .vis-row-sub { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .vis-badge { background:var(--primary-light); color:var(--primary); font-weight:700; font-size:12px; padding:3px 9px; border-radius:20px; flex-shrink:0; }
+        .vis-row.new { animation: visNew 1.4s ease; }
+        @keyframes visNew { from{background:var(--primary-light);} to{background:transparent;} }
+        .vis-empty { text-align:center; color:var(--muted); font-size:13px; padding:24px 0; }
+        @media (max-width: 700px) { .vis-two { grid-template-columns: 1fr !important; } }
+</style>
 </head>
 <body>
 
@@ -1266,6 +1300,9 @@
         </button>
         <button class="tab-btn" id="tab-btn-analytics" onclick="switchTab('analytics')">
             <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
+        </button>
+        <button class="tab-btn" id="tab-btn-visitors" onclick="switchTab('visitors')">
+            <i class="fa-solid fa-eye"></i><span>Visitors</span>
         </button>
         <button class="tab-btn" id="tab-btn-reviews" onclick="switchTab('reviews')">
             <i class="fa-solid fa-star"></i><span>Reviews</span>
@@ -1590,6 +1627,87 @@
         </div>
     </div>
     <!-- ===================== /ANALYTICS PANEL ===================== -->
+
+    <!-- ===================== VISITORS PANEL ===================== -->
+    <div id="panel-visitors" class="section-panel">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+            <div>
+                <h2 style="font-size:18px; font-weight:700; color:var(--primary); margin-bottom:2px;"><i class="fa-solid fa-eye"></i> Store Visitors</h2>
+                <p style="font-size:13px; color:var(--muted);">Daily, weekly &amp; monthly visitors — updates live</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="vis-live" id="vis-live-status"><span class="vis-dot"></span><span id="vis-live-text">Connecting…</span></span>
+                <button class="toolbar-btn" onclick="visReload()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            </div>
+        </div>
+
+        <!-- Online now -->
+        <div class="vis-online">
+            <div class="vis-online-num" id="vis-online">0</div>
+            <div><strong>Online right now</strong><br><span style="font-size:12px;opacity:.85;">people browsing the store this second</span></div>
+        </div>
+
+        <!-- Daily / Weekly / Monthly -->
+        <div class="vis-grid">
+            <div class="vis-card" id="vis-card-day">
+                <div class="vis-card-head"><i class="fa-solid fa-sun"></i> Today</div>
+                <div class="vis-big" data-f="unique">0</div>
+                <div class="vis-sub">unique visitors</div>
+                <div class="vis-rows">
+                    <div><span>Total visits</span><b data-f="visits">0</b></div>
+                    <div><span>Signed-in users</span><b data-f="users">0</b></div>
+                    <div><span>Guests</span><b data-f="guests">0</b></div>
+                </div>
+            </div>
+            <div class="vis-card" id="vis-card-week">
+                <div class="vis-card-head"><i class="fa-solid fa-calendar-week"></i> This Week <small>(from Mon)</small></div>
+                <div class="vis-big" data-f="unique">0</div>
+                <div class="vis-sub">unique visitors</div>
+                <div class="vis-rows">
+                    <div><span>Total visits</span><b data-f="visits">0</b></div>
+                    <div><span>Signed-in users</span><b data-f="users">0</b></div>
+                    <div><span>Guests</span><b data-f="guests">0</b></div>
+                </div>
+            </div>
+            <div class="vis-card" id="vis-card-month">
+                <div class="vis-card-head"><i class="fa-solid fa-calendar-days"></i> This Month</div>
+                <div class="vis-big" data-f="unique">0</div>
+                <div class="vis-sub">unique visitors</div>
+                <div class="vis-rows">
+                    <div><span>Total visits</span><b data-f="visits">0</b></div>
+                    <div><span>Signed-in users</span><b data-f="users">0</b></div>
+                    <div><span>Guests</span><b data-f="guests">0</b></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 30-day chart -->
+        <div class="analytics-chart-card" style="margin-bottom:20px;">
+            <div class="chart-card-title"><i class="fa-solid fa-chart-column"></i> Unique Visitors — last 30 days</div>
+            <div id="vis-chart" style="padding:8px 0; min-height:100px;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;" class="vis-two">
+            <!-- Visitors by user -->
+            <div class="analytics-chart-card">
+                <div class="chart-card-title" style="justify-content:space-between; flex-wrap:wrap;">
+                    <span><i class="fa-solid fa-users"></i> Visitors by User</span>
+                    <span class="vis-seg">
+                        <button class="active" id="vis-seg-day"   onclick="visSetPeriod('day')">Day</button>
+                        <button id="vis-seg-week"  onclick="visSetPeriod('week')">Week</button>
+                        <button id="vis-seg-month" onclick="visSetPeriod('month')">Month</button>
+                    </span>
+                </div>
+                <div id="vis-users" style="max-height:360px; overflow-y:auto;"></div>
+            </div>
+            <!-- Live feed -->
+            <div class="analytics-chart-card">
+                <div class="chart-card-title"><i class="fa-solid fa-bolt"></i> Live Activity</div>
+                <div id="vis-feed" style="max-height:360px; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- ===================== /VISITORS PANEL ===================== -->
 
     <!-- ===================== REVIEWS PANEL ===================== -->
     <div id="panel-reviews" class="section-panel">
@@ -2464,12 +2582,13 @@
     }
 
     function switchTab(tab) {
-        ['products','orders','analytics','reviews','rewards','wholesale'].forEach(t => {
+        ['products','orders','analytics','visitors','reviews','rewards','wholesale'].forEach(t => {
             document.getElementById('panel-' + t).classList.toggle('active', tab === t);
             document.getElementById('tab-btn-' + t).classList.toggle('active', tab === t);
         });
         if (tab === 'orders') loadOrders();
         if (tab === 'analytics') loadAnalytics();
+        if (tab === 'visitors') visInit();
         if (tab === 'reviews') loadAdminReviews();
         if (tab === 'rewards') loadRewards();
         if (tab === 'wholesale') wsAdminLoad();
@@ -3642,5 +3761,196 @@
 </script>
 <!-- ===================== /WHOLESALE ADMIN JS ===================== -->
 
+
+<!-- ===================== VISITORS ADMIN JS (real-time) ===================== -->
+<script>
+(function () {
+    const DAY = 86400000;
+    let visits = [];            // {id, vid, uid, email, name, t}
+    const seen = new Set();     // ids already in `visits`
+    let period = 'day';
+    let started = false;
+    let channel = null, presence = null;
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    // ── Period boundaries (browser local time) ──
+    function bounds() {
+        const now = new Date();
+        const day = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const dow = (new Date(day).getDay() + 6) % 7;                 // Monday = 0
+        const week = day - dow * DAY;
+        const month = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+        return { day, week, month };
+    }
+
+    function stats(since) {
+        const vids = new Set(), users = new Set(), vidsWithUser = new Set();
+        let n = 0;
+        for (const v of visits) {
+            if (v.t < since) continue;
+            n++; vids.add(v.vid);
+            if (v.uid) { users.add(v.uid); vidsWithUser.add(v.vid); }
+        }
+        return { unique: vids.size, visits: n, users: users.size, guests: vids.size - vidsWithUser.size };
+    }
+
+    function setCard(id, s, bump) {
+        const card = $(id); if (!card) return;
+        let changed = false;
+        card.querySelectorAll('[data-f]').forEach(el => {
+            const val = String(s[el.dataset.f]);
+            if (el.textContent !== val) { el.textContent = val; changed = true; }
+        });
+        if (changed && bump) { card.classList.remove('bump'); void card.offsetWidth; card.classList.add('bump'); }
+    }
+
+    function ago(t) {
+        const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+        if (s < 10) return 'just now';
+        if (s < 60) return s + 's ago';
+        if (s < 3600) return Math.floor(s / 60) + 'm ago';
+        if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+        return Math.floor(s / 86400) + 'd ago';
+    }
+
+    function renderCards(bump) {
+        const b = bounds();
+        setCard('vis-card-day',   stats(b.day),   bump);
+        setCard('vis-card-week',  stats(b.week),  bump);
+        setCard('vis-card-month', stats(b.month), bump);
+    }
+
+    function renderChart() {
+        const el = $('vis-chart'); if (!el) return;
+        const today = bounds().day;
+        const days = [];
+        for (let i = 29; i >= 0; i--) days.push({ start: today - i * DAY, vids: new Set() });
+        for (const v of visits) {
+            const k = Math.floor((v.t - days[0].start) / DAY);
+            if (k >= 0 && k < 30) days[k].vids.add(v.vid);
+        }
+        const max = Math.max(1, ...days.map(d => d.vids.size));
+        el.innerHTML = '<div class="sparkline-wrap">' + days.map(d => {
+            const n = d.vids.size, h = Math.max(2, Math.round(n / max * 100));
+            const label = new Date(d.start).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            return `<div class="spark-bar" style="height:${h}%" title="${label}: ${n} visitor${n === 1 ? '' : 's'}"></div>`;
+        }).join('') + '</div>' +
+        `<div class="spark-labels"><span>${new Date(days[0].start).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span><span>Peak: ${max}</span><span>Today</span></div>`;
+    }
+
+    function renderUsers() {
+        const el = $('vis-users'); if (!el) return;
+        const since = bounds()[period];
+        const map = new Map(); let guestVisits = 0; const guestIds = new Set();
+        for (const v of visits) {
+            if (v.t < since) continue;
+            if (!v.uid) { guestVisits++; guestIds.add(v.vid); continue; }
+            const u = map.get(v.uid) || { name: v.name, email: v.email, count: 0, last: 0 };
+            u.count++; if (v.t > u.last) { u.last = v.t; u.name = v.name || u.name; u.email = v.email || u.email; }
+            map.set(v.uid, u);
+        }
+        const rows = [...map.values()].sort((a, b) => b.last - a.last);
+        let html = rows.map(u => {
+            const label = u.name || (u.email || 'User').split('@')[0];
+            return `<div class="vis-row">
+                <div class="vis-avatar">${esc(label.charAt(0).toUpperCase())}</div>
+                <div class="vis-row-main"><div class="vis-row-name">${esc(label)}</div><div class="vis-row-sub">${esc(u.email || '')} · last seen ${ago(u.last)}</div></div>
+                <span class="vis-badge" title="Number of visits">${u.count}×</span></div>`;
+        }).join('');
+        if (guestIds.size) {
+            html += `<div class="vis-row">
+                <div class="vis-avatar guest"><i class="fa-solid fa-user-secret"></i></div>
+                <div class="vis-row-main"><div class="vis-row-name">Guests (not signed in)</div><div class="vis-row-sub">${guestIds.size} unique visitor${guestIds.size === 1 ? '' : 's'}</div></div>
+                <span class="vis-badge" style="background:#edf2f7;color:#4a5568;">${guestVisits}×</span></div>`;
+        }
+        el.innerHTML = html || '<div class="vis-empty">No visitors in this period yet.</div>';
+    }
+
+    function renderFeed(newId) {
+        const el = $('vis-feed'); if (!el) return;
+        const recent = [...visits].sort((a, b) => b.t - a.t).slice(0, 25);
+        el.innerHTML = recent.map(v => {
+            const label = v.uid ? (v.name || (v.email || 'User').split('@')[0]) : 'Guest visitor';
+            const icon = v.uid ? esc(label.charAt(0).toUpperCase()) : '<i class="fa-solid fa-user-secret"></i>';
+            return `<div class="vis-row ${v.id === newId ? 'new' : ''}">
+                <div class="vis-avatar ${v.uid ? '' : 'guest'}">${icon}</div>
+                <div class="vis-row-main"><div class="vis-row-name">${esc(label)}</div><div class="vis-row-sub">${v.uid ? esc(v.email || '') + ' · ' : ''}${esc(v.device || '')}</div></div>
+                <span style="font-size:11px;color:var(--muted);white-space:nowrap;">${ago(v.t)}</span></div>`;
+        }).join('') || '<div class="vis-empty">Waiting for the first visitor…</div>';
+    }
+
+    function renderAll(bump, newId) { renderCards(bump); renderChart(); renderUsers(); renderFeed(newId); }
+
+    function addRow(r) {
+        if (seen.has(r.id)) return false;
+        seen.add(r.id);
+        visits.push({ id: r.id, vid: r.visitor_id, uid: r.user_id, email: r.user_email, name: r.user_name, device: r.device, t: new Date(r.created_at).getTime() });
+        return true;
+    }
+
+    async function load() {
+        const since = new Date(bounds().month - 2 * DAY);               // covers month + 30-day chart
+        const chartSince = new Date(Date.now() - 31 * DAY);
+        const from = since < chartSince ? since : chartSince;
+        visits = []; seen.clear();
+        const PAGE = 1000;
+        for (let p = 0; p < 100; p++) {                                 // Supabase caps a request at 1000 rows → page through
+            const { data, error } = await _db.from('site_visits')
+                .select('id, visitor_id, user_id, user_email, user_name, device, created_at')
+                .gte('created_at', from.toISOString())
+                .order('created_at', { ascending: false })
+                .range(p * PAGE, p * PAGE + PAGE - 1);
+            if (error) { console.error(error); showToast('Could not load visitors — did you run visitors_setup.sql?', 'error'); break; }
+            (data || []).forEach(addRow);
+            if (!data || data.length < PAGE) break;
+        }
+        renderAll(false);
+    }
+
+    function setLive(on, text) {
+        const w = $('vis-live-status'); if (!w) return;
+        w.classList.toggle('on', on);
+        $('vis-live-text').textContent = text;
+    }
+
+    function subscribe() {
+        channel = _db.channel('admin:visits')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'site_visits' }, (payload) => {
+                if (addRow(payload.new)) renderAll(true, payload.new.id);
+            })
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') setLive(true, 'Live');
+                else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setLive(false, 'Reconnecting…');
+                else if (status === 'CLOSED') setLive(false, 'Offline');
+            });
+
+        // Online-now counter (presence is broadcast by index.html)
+        presence = _db.channel('site:presence')
+            .on('presence', { event: 'sync' }, () => {
+                const n = Object.keys(presence.presenceState()).length;
+                const el = $('vis-online'); if (el) el.textContent = n;
+            })
+            .subscribe();
+    }
+
+    window.visInit = async function () {
+        if (started) { renderAll(false); return; }
+        started = true;
+        setLive(false, 'Connecting…');
+        await load();
+        subscribe();
+        // keep "x min ago" labels fresh and roll over day/week/month boundaries
+        setInterval(() => { if ($('panel-visitors').classList.contains('active')) renderAll(false); }, 30000);
+    };
+    window.visReload = async function () { await load(); showToast('Visitors refreshed', 'success'); };
+    window.visSetPeriod = function (p) {
+        period = p;
+        ['day', 'week', 'month'].forEach(x => $('vis-seg-' + x).classList.toggle('active', x === p));
+        renderUsers();
+    };
+})();
+</script>
 </body>
 </html>
