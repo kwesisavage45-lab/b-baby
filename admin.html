@@ -969,6 +969,35 @@
         .orders-table td.order-status-cell { white-space: nowrap; }
         .orders-table td.order-actions-cell { white-space: nowrap; }
         .orders-table td.order-update-cell { min-width: 160px; }
+
+        /* ORDER ITEM THUMBNAILS */
+        .oi-row { display:flex; align-items:center; gap:9px; padding:5px 0; }
+        .oi-row + .oi-row { border-top:1px dashed var(--border); }
+        .oi-thumb { width:46px; height:54px; border-radius:8px; overflow:hidden; flex-shrink:0; background:var(--bg); display:flex; align-items:center; justify-content:center; color:#ccc; font-size:16px; border:1px solid var(--border); }
+        .oi-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .oi-info { min-width:0; line-height:1.35; }
+        .oi-name { display:block; color:var(--text); font-weight:600; }
+        .oi-meta { display:block; font-size:11px; color:var(--muted); }
+        .orders-table td.order-items-cell { min-width:230px; max-width:300px; }
+
+        /* ORDERS TABLE -> CARDS ON PHONES */
+        @media (max-width: 700px) {
+            .orders-table-wrap { overflow:visible; background:transparent; box-shadow:none; }
+            .orders-table, .orders-table tbody { display:block; width:100%; }
+            .orders-table thead { display:none; }
+            .orders-table tbody tr.order-row { display:block; background:var(--card); border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); margin-bottom:14px; padding:4px 14px 10px; border-bottom:none; }
+            .orders-table tbody tr.order-row:hover { background:var(--card); }
+            .orders-table td { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:9px 0; border-bottom:1px dashed var(--border); text-align:right; white-space:normal !important; max-width:none !important; min-width:0 !important; }
+            .orders-table td::before { content:attr(data-label); flex-shrink:0; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; color:var(--muted); text-align:left; padding-top:2px; }
+            .orders-table td.order-items-cell { display:block; text-align:left; }
+            .orders-table td.order-items-cell::before { display:block; margin-bottom:4px; }
+            .orders-table td.order-note-cell:empty { display:none; }
+            .orders-table td.order-update-cell { display:block; text-align:left; }
+            .orders-table td.order-update-cell::before { display:block; margin-bottom:5px; }
+            .orders-table td.order-update-cell .table-status-select { width:100%; }
+            .orders-table td.order-actions-cell { border-bottom:none; justify-content:flex-end; }
+            .oi-thumb { width:52px; height:62px; }
+        }
         .order-print-btn {
             display: inline-flex;
             align-items: center;
@@ -1382,9 +1411,9 @@
                 <option value="Tops">Tops</option>
                 <option value="Bottoms">Bottoms</option>
                 <option value="Wigs">Wigs</option>
-                <option value="Slippers">Slippers</option>
-                <option value="Bags">Bags</option>
-                <option value="Purses">Purses</option>
+                <option value="Footwears">Footwears</option>
+                <option value="Bags and Purses">Bags and Purses</option>
+                <option value="Jewelry">Jewelry</option>
                 <option value="Other Accessories">Other Accessories</option>
             </select>
         </div>
@@ -1469,7 +1498,7 @@
         </div>
         <select id="product-category-filter" class="product-filter" onchange="loadProducts()">
             <option value="">All categories</option>
-            <option value="Dresses">Dresses</option><option value="Tops">Tops</option><option value="Bottoms">Bottoms</option><option value="Wigs">Wigs</option><option value="Slippers">Slippers</option><option value="Bags">Bags</option><option value="Purses">Purses</option><option value="Other Accessories">Other Accessories</option>
+            <option value="Dresses">Dresses</option><option value="Tops">Tops</option><option value="Bottoms">Bottoms</option><option value="Wigs">Wigs</option><option value="Footwears">Footwears</option><option value="Bags and Purses">Bags and Purses</option><option value="Jewelry">Jewelry</option><option value="Other Accessories">Other Accessories</option>
         </select>
     </div>
 
@@ -1873,8 +1902,8 @@
                 <select id="ws-product-category">
                     <option value="">Select category</option>
                     <option>Dresses</option><option>Tops</option><option>Bottoms</option>
-                    <option>Wigs</option><option>Slippers</option><option>Bags</option>
-                    <option>Purses</option><option>Other Accessories</option>
+                    <option>Wigs</option><option>Footwears</option><option>Bags and Purses</option>
+                    <option>Jewelry</option><option>Other Accessories</option>
                 </select>
             </div>
 
@@ -2038,9 +2067,9 @@
                     <option value="Tops">Tops</option>
                     <option value="Bottoms">Bottoms</option>
                     <option value="Wigs">Wigs</option>
-                    <option value="Slippers">Slippers</option>
-                    <option value="Bags">Bags</option>
-                    <option value="Purses">Purses</option>
+                    <option value="Footwears">Footwears</option>
+                    <option value="Bags and Purses">Bags and Purses</option>
+                    <option value="Jewelry">Jewelry</option>
                     <option value="Other Accessories">Other Accessories</option>
                 </select>
             </div>
@@ -2789,6 +2818,63 @@
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
+    // Small product thumbnail used in the on-screen order list + printed receipt.
+    function _itemThumb(url) {
+        if (!url) return `<div class="oi-thumb"><i class="fa-solid fa-image"></i></div>`;
+        return `<div class="oi-thumb"><img src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<i class=&quot;fa-solid fa-image&quot;></i>'"></div>`;
+    }
+
+    // Normalises an order's items so every export/render uses the same shape.
+    function _orderItemList(o) {
+        const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
+        if (isPreorder) {
+            return [{ name: o.product_name || 'Product', variant: '', qty: 1, price: parseFloat(o.price || 0), img: o.product_image || o.image_url || o.img || '' }];
+        }
+        return (o.items || []).map(i => ({
+            name: i.name || 'Item',
+            variant: [i.size, i.color].filter(Boolean).join('/'),
+            qty: i.qty || i.quantity || 1,
+            price: parseFloat(i.price || 0),
+            img: i.img || i.image || i.image_url || ''
+        }));
+    }
+
+    // Loads an image and returns a small square JPEG data-URL for jsPDF (null if it can't be loaded).
+    const _pdfImgCache = {};
+    function _loadImgData(url, size = 110) {
+        if (!url) return Promise.resolve(null);
+        if (_pdfImgCache[url] !== undefined) return Promise.resolve(_pdfImgCache[url]);
+        return new Promise(resolve => {
+            const im = new Image();
+            im.crossOrigin = 'anonymous';
+            const done = v => { _pdfImgCache[url] = v; resolve(v); };
+            const timer = setTimeout(() => done(null), 8000);
+            im.onload = () => {
+                clearTimeout(timer);
+                try {
+                    const c = document.createElement('canvas');
+                    c.width = c.height = size;
+                    const x = c.getContext('2d');
+                    x.fillStyle = '#fff'; x.fillRect(0, 0, size, size);
+                    const s = Math.min(im.width, im.height);
+                    x.drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, size, size);
+                    done(c.toDataURL('image/jpeg', 0.8));
+                } catch (e) { done(null); }
+            };
+            im.onerror = () => { clearTimeout(timer); done(null); };
+            im.src = url;
+        });
+    }
+
+    // autoTable hook: paints the thumbnail stored on a cell (cell.raw._img)
+    function _drawPdfThumb(data) {
+        if (data.section !== 'body') return;
+        const img = data.cell.raw && data.cell.raw._img;
+        if (!img) return;
+        const s = Math.min(data.cell.width - 6, data.cell.height - 6, 34);
+        data.doc.addImage(img, 'JPEG', data.cell.x + 3, data.cell.y + (data.cell.height - s) / 2, s, s);
+    }
+
     function formatAdminDate(dateStr) {
         if (!dateStr) return '';
         const d = new Date(dateStr);
@@ -2864,12 +2950,14 @@
                    <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>`;
 
             // Items text
-            const itemsText = isPreorder
-                ? escapeHtml(o.product_name || 'Product')
-                : (o.items || []).map(item => {
-                    const variant = [item.size, item.color].filter(Boolean).join('/');
-                    return `${escapeHtml(item.name)}${variant ? ' ('+variant+')' : ''} ×${item.qty || item.quantity || 1}`;
-                }).join('<br>');
+            const itemsText = _orderItemList(o).map(it => `
+                <div class="oi-row">
+                    ${_itemThumb(it.img)}
+                    <div class="oi-info">
+                        <span class="oi-name">${escapeHtml(it.name)}</span>
+                        <span class="oi-meta">${it.variant ? escapeHtml(it.variant) + ' · ' : ''}×${it.qty}</span>
+                    </div>
+                </div>`).join('');
 
             // Total display
             let totalDisplay = `GHS ${parseFloat(o.total || o.price || 0).toFixed(2)}`;
@@ -2892,27 +2980,27 @@
 
             return `
             <tr class="order-row" style="opacity:${isTest ? '0.72' : '1'};">
-                <td class="order-ref-cell">
+                <td class="order-ref-cell" data-label="Order #">
                     ${orderRef}
                     ${isPreorder ? `<span style="background:#9333ea;color:white;padding:1px 5px;border-radius:4px;font-size:9px;display:block;margin-top:3px;width:fit-content;">PREORDER</span>` : ''}
                     ${isWholesale ? `<span style="background:#6b21a8;color:white;padding:1px 5px;border-radius:4px;font-size:9px;display:block;margin-top:3px;width:fit-content;">WHOLESALE</span>` : ''}
                     ${isTest ? `<span class="test-badge">TEST</span>` : ''}
                 </td>
-                <td style="white-space:nowrap;font-size:12px;color:var(--muted);">${formatAdminDate(o.created_at)}</td>
-                <td class="order-name-cell">${escapeHtml(o.customer_name)}</td>
-                <td style="white-space:nowrap;font-size:12px;">${escapeHtml(o.customer_phone || o.phone || '')}</td>
-                <td style="font-size:12px;max-width:140px;">${o.address === 'PICKUP' ? '🏪 Store Pickup' : escapeHtml(o.customer_address || o.address || '')}</td>
-                <td class="order-items-cell">${itemsText}</td>
-                <td class="order-total-cell">${totalDisplay}</td>
-                <td class="order-note-cell">${escapeHtml(noteText)}</td>
-                <td class="order-status-cell"><span class="order-status-badge status-${statusClass}">${o.status || 'Pending'}</span></td>
-                <td class="order-update-cell">
+                <td data-label="Date" style="white-space:nowrap;font-size:12px;color:var(--muted);">${formatAdminDate(o.created_at)}</td>
+                <td class="order-name-cell" data-label="Customer">${escapeHtml(o.customer_name)}</td>
+                <td data-label="Phone" style="white-space:nowrap;font-size:12px;">${escapeHtml(o.customer_phone || o.phone || '')}</td>
+                <td data-label="Address" style="font-size:12px;max-width:140px;">${o.address === 'PICKUP' ? '🏪 Store Pickup' : escapeHtml(o.customer_address || o.address || '')}</td>
+                <td class="order-items-cell" data-label="Items">${itemsText}</td>
+                <td class="order-total-cell" data-label="Total">${totalDisplay}</td>
+                <td class="order-note-cell" data-label="Note">${escapeHtml(noteText)}</td>
+                <td class="order-status-cell" data-label="Status"><span class="order-status-badge status-${statusClass}">${o.status || 'Pending'}</span></td>
+                <td class="order-update-cell" data-label="Update Status">
                     <select class="table-status-select" onchange="handleStatusChange('${o.id}', this.value, ${needsBalance}, ${balancePaid}, ${balanceDue})">
                         ${statusOptions}
                     </select>
                     ${balanceHtml}
                 </td>
-                <td class="order-actions-cell">
+                <td class="order-actions-cell" data-label="Actions">
                     <div class="order-actions-wrap">
                         <button class="order-print-btn" onclick="printOrder('${o.id}')" title="Print order"><i class="fa-solid fa-print"></i> Print</button>
                         <button class="order-print-btn outline" onclick="downloadOrderPDF('${o.id}')" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></button>
@@ -2973,7 +3061,8 @@
             : (o.items || []).map(item => {
                 const variant = [item.size, item.color].filter(Boolean).join(' / ');
                 const qty = item.qty || item.quantity || 1;
-                return `<tr><td>${escapeHtml(item.name)}${variant ? ' ('+variant+')' : ''}</td><td style="text-align:center;">×${qty}</td><td style="text-align:right;">GHS ${(item.price * qty).toFixed(2)}</td></tr>`;
+                const pic = item.img ? `<img src="${escapeHtml(item.img)}" alt="" style="width:40px;height:46px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : '';
+                return `<tr><td><div style="display:flex;align-items:center;gap:8px;">${pic}<span>${escapeHtml(item.name)}${variant ? ' ('+variant+')' : ''}</span></div></td><td style="text-align:center;">×${qty}</td><td style="text-align:right;">GHS ${(item.price * qty).toFixed(2)}</td></tr>`;
             }).join('');
 
         const total = parseFloat(o.total || o.price || 0).toFixed(2);
@@ -3036,14 +3125,16 @@
         win.document.write(`<!DOCTYPE html><html><head><title>Order Receipt</title><style>body{background:#fff;} @media print{body{margin:0;}}</style></head><body>${_buildOrderReceiptHTML(o)}</body></html>`);
         win.document.close();
         win.focus();
-        setTimeout(() => win.print(), 400);
+        setTimeout(() => win.print(), 1200); // give item photos time to load
     }
 
-    function downloadOrderPDF(orderId) {
+    async function downloadOrderPDF(orderId) {
         const o = allOrders.find(x => x.id === orderId);
         if (!o) return showToast('Order not found', 'error');
         const { jsPDF } = window.jspdf;
         if (!jsPDF) return showToast('PDF library not loaded', 'error');
+        const pdfItems = _orderItemList(o);
+        const pdfImgs = await Promise.all(pdfItems.map(it => _loadImgData(it.img)));
         const doc = new jsPDF({ unit: 'pt', format: 'a5' });
         const isPreorder = o.order_type === 'preorder' || o.status === 'Preorder - Awaiting Stock';
         const orderRef = isPreorder ? (o.order_ref || `#${o.id.slice(0,8).toUpperCase()}`) : `#${o.id.slice(0,8).toUpperCase()}`;
@@ -3081,30 +3172,30 @@
 
         // Items table
         y += 8;
-        const itemsBody = isPreorder
-            ? [[o.product_name || 'Product', '1', `GHS ${parseFloat(o.price||0).toFixed(2)}`]]
-            : (o.items || []).map(item => {
-                const variant = [item.size, item.color].filter(Boolean).join('/');
-                const qty = item.qty || item.quantity || 1;
-                return [`${item.name}${variant ? ' ('+variant+')' : ''}`, `×${qty}`, `GHS ${(item.price * qty).toFixed(2)}`];
-            });
+        const itemsBody = pdfItems.map((it, idx) => [
+            { content: '', _img: pdfImgs[idx], styles: { minCellHeight: 40 } },
+            { content: `${it.name}${it.variant ? ' ('+it.variant+')' : ''}`, styles: { valign: 'middle' } },
+            { content: isPreorder ? '1' : `×${it.qty}`, styles: { valign: 'middle' } },
+            { content: `GHS ${(it.price * (isPreorder ? 1 : it.qty)).toFixed(2)}`, styles: { valign: 'middle', halign: 'right' } }
+        ]);
 
         doc.autoTable({
-            head: [['Item', 'Qty', 'Amount']],
+            head: [['Photo', 'Item', 'Qty', 'Amount']],
             body: itemsBody,
+            didDrawCell: _drawPdfThumb,
             startY: y,
             styles: { fontSize: 9, cellPadding: 5 },
             headStyles: { fillColor: [181, 71, 107] },
             foot: [
-                ['', 'Total', `GHS ${total.toFixed(2)}`],
+                ['', '', 'Total', `GHS ${total.toFixed(2)}`],
                 ...(isPreorder && balanceDue > 0 ? [
-                    ['', 'Amount Paid', `GHS ${(parseFloat(o.price||0)-balanceDue).toFixed(2)}`],
-                    ['', 'Balance Due', `GHS ${balanceDue.toFixed(2)}`]
+                    ['', '', 'Amount Paid', `GHS ${(parseFloat(o.price||0)-balanceDue).toFixed(2)}`],
+                    ['', '', 'Balance Due', `GHS ${balanceDue.toFixed(2)}`]
                 ] : [])
             ],
             footStyles: { fontStyle: 'bold' },
             margin: { left: 30, right: 30 },
-            columnStyles: { 0: { cellWidth: 180 }, 2: { halign: 'right' } }
+            columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: 150 }, 2: { cellWidth: 55 }, 3: { halign: 'right' } }
         });
 
         // Footer
@@ -3125,7 +3216,7 @@
             o.address,
             o.total,
             o.status,
-            (o.items || []).map(i => `${i.name} x${i.quantity}`).join('; ')
+            (o.items || []).map(i => `${i.name}${[i.size, i.color].filter(Boolean).length ? ' ('+[i.size, i.color].filter(Boolean).join('/')+')' : ''} x${i.qty || i.quantity || 1}`).join('; ')
         ]);
         return { headers, rows };
     }
@@ -3143,25 +3234,61 @@
         XLSX.writeFile(wb, `B-BABY-Orders-${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    function downloadOrdersPDF() {
+    async function downloadOrdersPDF() {
         if (allOrders.length === 0) return showToast('No orders to download', 'error');
-        const { headers, rows } = _buildOrdersRows();
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+        const orders = allOrders.filter(o => !o.is_test);
+        showToast('Preparing PDF with product photos…', 'success');
 
+        // Pre-load every product photo once (Excel stays text-only)
+        const urls = [...new Set(orders.flatMap(o => _orderItemList(o).map(i => i.img)).filter(Boolean))];
+        await Promise.all(urls.map(u => _loadImgData(u)));
+
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
         doc.setFontSize(14);
         doc.text('B-BABY Collections — Orders', 40, 30);
         doc.setFontSize(9);
         doc.setTextColor(120);
         doc.text(`Generated ${new Date().toLocaleString()}`, 40, 45);
 
+        // One row per ordered item; order/customer details span all of that order's item rows
+        const body = [];
+        orders.forEach(o => {
+            const items = _orderItemList(o);
+            const list = items.length ? items : [{ name: '—', variant: '', qty: 0, img: '' }];
+            const n = list.length;
+            const ref = '#' + String(o.id).slice(0, 8).toUpperCase();
+            const addr = o.address === 'PICKUP' ? 'Store Pickup' : (o.customer_address || o.address || '');
+            const span = txt => ({ content: String(txt == null ? '' : txt), rowSpan: n, styles: { valign: 'top' } });
+            list.forEach((it, idx) => {
+                const itemCells = [
+                    { content: '', _img: _pdfImgCache[it.img] || null, styles: { minCellHeight: 40 } },
+                    { content: `${it.name}${it.variant ? ' ('+it.variant+')' : ''}${it.qty ? ' ×'+it.qty : ''}`, styles: { valign: 'middle' } }
+                ];
+                if (idx === 0) {
+                    body.push([
+                        span(ref), span(formatAdminDate(o.created_at)), span(o.customer_name || ''),
+                        span(o.customer_phone || o.phone || ''), span(addr), span(o.status || ''),
+                        span(parseFloat(o.total || o.price || 0).toFixed(2)),
+                        ...itemCells
+                    ]);
+                } else {
+                    body.push(itemCells);
+                }
+            });
+        });
+
         doc.autoTable({
-            head: [headers],
-            body: rows,
+            head: [['Order #', 'Date', 'Customer', 'Phone', 'Address', 'Status', 'Total (GHS)', 'Photo', 'Item']],
+            body,
             startY: 58,
             styles: { fontSize: 8, cellPadding: 4, overflow: 'linebreak' },
             headStyles: { fillColor: [138, 43, 71] },
-            columnStyles: { 7: { cellWidth: 220 } },
+            columnStyles: {
+                0: { cellWidth: 52 }, 1: { cellWidth: 58 }, 2: { cellWidth: 70 }, 3: { cellWidth: 62 },
+                4: { cellWidth: 98 }, 5: { cellWidth: 55 }, 6: { cellWidth: 48 }, 7: { cellWidth: 44 }
+            },
+            didDrawCell: _drawPdfThumb,
             margin: { left: 40, right: 40 }
         });
 
