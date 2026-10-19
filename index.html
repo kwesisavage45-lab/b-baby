@@ -2188,6 +2188,14 @@
 
         .order-item-line:last-child { border-bottom: none; }
 
+        /* order history item with thumbnail */
+        .order-item-line.has-thumb { align-items: center; gap: 10px; padding: 8px 0; }
+        .oh-thumb { width: 52px; height: 62px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: var(--bg-light); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 18px; }
+        .oh-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .oh-info { flex: 1; min-width: 0; line-height: 1.4; word-break: break-word; }
+        .oh-price { flex-shrink: 0; font-weight: 600; white-space: nowrap; }
+        @media (max-width: 380px) { .oh-thumb { width: 44px; height: 52px; } .order-item-line.has-thumb { gap: 8px; } }
+
         .order-total-line {
             display: flex;
             justify-content: space-between;
@@ -2395,14 +2403,14 @@
                 <button class="col-cat-btn" onclick="filterCollection('Wigs', this)">
                     Wigs
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Slippers', this)">
-                    <i class="fa-solid fa-shoe-prints"></i> Slippers
+                <button class="col-cat-btn" onclick="filterCollection('Footwears', this)">
+                    <i class="fa-solid fa-shoe-prints"></i> Footwears
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Bags', this)">
-                    <i class="fa-solid fa-bag-shopping"></i> Bags
+                <button class="col-cat-btn" onclick="filterCollection('Bags and Purses', this)">
+                    <i class="fa-solid fa-bag-shopping"></i> Bags and Purses
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Purses', this)">
-                    <i class="fa-solid fa-wallet"></i> Purses
+                <button class="col-cat-btn" onclick="filterCollection('Jewelry', this)">
+                    <i class="fa-solid fa-gem"></i> Jewelry
                 </button>
                 <button class="col-cat-btn" onclick="filterCollection('Other Accessories', this)">
                     <i class="fa-solid fa-star"></i> Accessories
@@ -2476,8 +2484,9 @@
                         <li><a href="#">Dresses</a></li>
                         <li><a href="#">Tops</a></li>
                         <li><a href="#">Bottoms</a></li>
-                        <li><a href="#">Bags</a></li>
-                        <li><a href="#">Purses</a></li>
+                        <li><a href="#">Footwears</a></li>
+                        <li><a href="#">Bags and Purses</a></li>
+                        <li><a href="#">Jewelry</a></li>
                         <li><a href="#">Other Accessories</a></li>
                     </ul>
                 </div>
@@ -2970,9 +2979,9 @@
             <li><a href="#">Tops <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Bottoms <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Wigs <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Slippers <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Bags <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Purses <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Footwears <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Bags and Purses <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Jewelry <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Other Accessories <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="preorder.html" class="cat-sheet-external" style="color: var(--primary-color); font-weight: 700;"><i class="fa-solid fa-hourglass-half"></i>&nbsp; Preorder <i class="fa-solid fa-chevron-right"></i></a></li>
         </ul>
@@ -6106,17 +6115,23 @@
                 const orderRef = isPreorder ? (o.order_ref || o.id.slice(0, 8).toUpperCase()) : o.id.slice(0, 8).toUpperCase();
                 const statusClass = STATUS_CLASS[o.status] || 'status-pending';
                 
+                const _thumb = url => url
+                    ? `<div class="oh-thumb"><img src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<i class=&quot;fa-solid fa-image&quot;></i>'"></div>`
+                    : `<div class="oh-thumb"><i class="fa-solid fa-image"></i></div>`;
+
                 const itemsHtml = isPreorder 
-                    ? `<div class="order-item-line">
-                        <span>${escapeHtml(o.product_name || 'Product')}</span>
-                        <span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
+                    ? `<div class="order-item-line has-thumb">
+                        ${_thumb(o.product_image || o.image_url || '')}
+                        <span class="oh-info">${escapeHtml(o.product_name || 'Product')}</span>
+                        <span class="oh-price">GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
                     </div>`
                     : (o.items || []).map(i => {
                         const variant = [i.size, i.color].filter(Boolean).join(' / ');
                         return `
-                        <div class="order-item-line">
-                            <span>${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
-                            <span>GHS ${(i.price * i.qty).toFixed(2)}</span>
+                        <div class="order-item-line has-thumb">
+                            ${_thumb(i.img)}
+                            <span class="oh-info">${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
+                            <span class="oh-price">GHS ${(i.price * i.qty).toFixed(2)}</span>
                         </div>
                     `;}).join('');
 
