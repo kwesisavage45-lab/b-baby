@@ -2188,14 +2188,6 @@
 
         .order-item-line:last-child { border-bottom: none; }
 
-        /* order history item with thumbnail */
-        .order-item-line.has-thumb { align-items: center; gap: 10px; padding: 8px 0; }
-        .oh-thumb { width: 52px; height: 62px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: var(--bg-light); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 18px; }
-        .oh-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .oh-info { flex: 1; min-width: 0; line-height: 1.4; word-break: break-word; }
-        .oh-price { flex-shrink: 0; font-weight: 600; white-space: nowrap; }
-        @media (max-width: 380px) { .oh-thumb { width: 44px; height: 52px; } .order-item-line.has-thumb { gap: 8px; } }
-
         .order-total-line {
             display: flex;
             justify-content: space-between;
@@ -2403,14 +2395,14 @@
                 <button class="col-cat-btn" onclick="filterCollection('Wigs', this)">
                     Wigs
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Footwears', this)">
-                    <i class="fa-solid fa-shoe-prints"></i> Footwears
+                <button class="col-cat-btn" onclick="filterCollection('Slippers', this)">
+                    <i class="fa-solid fa-shoe-prints"></i> Slippers
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Bags and Purses', this)">
-                    <i class="fa-solid fa-bag-shopping"></i> Bags and Purses
+                <button class="col-cat-btn" onclick="filterCollection('Bags', this)">
+                    <i class="fa-solid fa-bag-shopping"></i> Bags
                 </button>
-                <button class="col-cat-btn" onclick="filterCollection('Jewelry', this)">
-                    <i class="fa-solid fa-gem"></i> Jewelry
+                <button class="col-cat-btn" onclick="filterCollection('Purses', this)">
+                    <i class="fa-solid fa-wallet"></i> Purses
                 </button>
                 <button class="col-cat-btn" onclick="filterCollection('Other Accessories', this)">
                     <i class="fa-solid fa-star"></i> Accessories
@@ -2484,9 +2476,8 @@
                         <li><a href="#">Dresses</a></li>
                         <li><a href="#">Tops</a></li>
                         <li><a href="#">Bottoms</a></li>
-                        <li><a href="#">Footwears</a></li>
-                        <li><a href="#">Bags and Purses</a></li>
-                        <li><a href="#">Jewelry</a></li>
+                        <li><a href="#">Bags</a></li>
+                        <li><a href="#">Purses</a></li>
                         <li><a href="#">Other Accessories</a></li>
                     </ul>
                 </div>
@@ -2979,9 +2970,9 @@
             <li><a href="#">Tops <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Bottoms <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Wigs <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Footwears <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Bags and Purses <i class="fa-solid fa-chevron-right"></i></a></li>
-            <li><a href="#">Jewelry <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Slippers <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Bags <i class="fa-solid fa-chevron-right"></i></a></li>
+            <li><a href="#">Purses <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="#">Other Accessories <i class="fa-solid fa-chevron-right"></i></a></li>
             <li><a href="preorder.html" class="cat-sheet-external" style="color: var(--primary-color); font-weight: 700;"><i class="fa-solid fa-hourglass-half"></i>&nbsp; Preorder <i class="fa-solid fa-chevron-right"></i></a></li>
         </ul>
@@ -3370,6 +3361,9 @@
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
+                    </div>
+                    <div style="text-align:right; margin:-4px 0 2px;">
+                        <a href="#" onclick="event.preventDefault(); openForgotPassword();" style="font-size:13px; color:var(--primary-color); font-weight:600; text-decoration:none;">Forgot password?</a>
                     </div>
                     <div class="auth-field" style="display: flex; align-items: center; gap: 8px; margin-top: 12px;">
                         <input type="checkbox" id="login-remember-me" style="width: 18px; height: 18px; cursor: pointer;">
@@ -3782,6 +3776,85 @@
             }
         }
     </style>
+
+    <!-- ===================== FORGOT / RESET PASSWORD MODAL ===================== -->
+    <div class="auth-overlay" id="pw-overlay">
+        <div class="auth-modal">
+            <button class="auth-close" onclick="closePwModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+
+            <div class="auth-brand">
+                <h2>B-BABY <span style="font-weight:300">Collections</span></h2>
+                <p id="pw-sub">Reset your password</p>
+            </div>
+
+            <div class="auth-error" id="pw-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="pw-error-text"></span>
+            </div>
+            <div id="pw-success" style="display:none; background:#e8f5ee; color:#1b6b45; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:14px; line-height:1.5;"></div>
+
+            <!-- Step 1: enter email -->
+            <div id="pw-step-email">
+                <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+                    Enter the email you signed up with. We'll send a reset link and a one-time code. They expire after 30 minutes.
+                </p>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="pw-email" placeholder="your@email.com" autocomplete="email">
+                    </div>
+                </div>
+                <button class="auth-submit" id="pw-send-btn" onclick="sendPasswordReset()">Send Reset Link</button>
+                <p style="text-align:center; font-size:13px; margin-top:14px;">
+                    <a href="#" onclick="event.preventDefault(); backToSignIn();" style="color:var(--primary-color); font-weight:600;">Back to Sign In</a>
+                </p>
+            </div>
+
+            <!-- Step 2: check email, or enter the code -->
+            <div id="pw-step-code" style="display:none;">
+                <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:6px;">
+                    If an account exists for <strong id="pw-sent-to" style="color:var(--text-dark);"></strong>, we've sent a reset link and a code. The link and code expire in 30 minutes.
+                </p>
+                <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+                    Click the link in the email, or enter the code below.
+                </p>
+                <div class="auth-field">
+                    <label>Code from email</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input type="text" id="pw-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456">
+                    </div>
+                </div>
+                <button class="auth-submit" id="pw-verify-btn" onclick="verifyResetCode()">Verify Code</button>
+                <p style="text-align:center; font-size:13px; margin-top:14px; color:var(--text-muted);">
+                    Didn't get it? Check spam or
+                    <a href="#" id="pw-resend" onclick="resendPasswordReset(event)" style="color:var(--primary-color); font-weight:600;">Resend email</a>
+                </p>
+            </div>
+
+            <!-- Step 3: choose a new password -->
+            <div id="pw-step-new" style="display:none;">
+                <div class="auth-field">
+                    <label>New Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="pw-new" placeholder="At least 6 characters" autocomplete="new-password">
+                        <button class="auth-pw-toggle" onclick="toggleAuthPw('pw-new', this)" type="button"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label>Confirm New Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="pw-new2" placeholder="Re-enter password" autocomplete="new-password">
+                        <button class="auth-pw-toggle" onclick="toggleAuthPw('pw-new2', this)" type="button"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <button class="auth-submit" id="pw-save-btn" onclick="submitNewPassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
 
     <div class="auth-overlay" id="order-form-overlay">
         <div class="auth-modal" id="checkout-modal">
@@ -5013,6 +5086,8 @@
 
         // Listen for auth changes
         _db.auth.onAuthStateChange((event, session) => {
+            // Reset link clicked → show the "choose a new password" screen
+            if (event === 'PASSWORD_RECOVERY') openPasswordRecovery();
             if (session) setLoggedIn(session.user);
             else setLoggedOut();
         });
@@ -5217,6 +5292,7 @@
             const btn      = document.getElementById('login-btn');
 
             if (!email || !password) return showAuthError('Please enter your email and password');
+            if (isSuspiciousEmail(email)) return showAuthError(BOT_EMAIL_MESSAGE);
 
             btn.disabled = true;
             btn.textContent = 'Signing in...';
@@ -5293,6 +5369,21 @@
             document.getElementById('auth-error').classList.remove('show');
         }
 
+        // ── BOT-STYLE EMAIL FILTER ──
+        // Blocks the auto-generated pattern: firstname.lastname + 2-3 digits @gmail.com
+        // (e.g. victoria.akinwale91@gmail.com). Mirrored server-side by the SQL trigger.
+        const BOT_EMAIL_MESSAGE = 'This email format isn\'t accepted. Please use a different email address, or sign up with your phone number.';
+        function isSuspiciousEmail(email) {
+            const e = String(email || '').trim().toLowerCase();
+            return /^[a-z]{3,}\.[a-z]{3,}\d{2,3}@gmail\.com$/.test(e);
+        }
+        // Checkout email field (only shown to users without an account email)
+        function checkoutEmailBlocked() {
+            if (currentUser?.email) return false;
+            const v = (document.getElementById('order-email')?.value || '').trim();
+            return !!v && isSuspiciousEmail(v);
+        }
+
         // ── EMAIL REGISTER ──
         async function authRegister() {
             const name     = document.getElementById('reg-name').value.trim();
@@ -5302,6 +5393,7 @@
 
             if (!name)               return showAuthError('Please enter your name');
             if (!email)              return showAuthError('Please enter your email');
+            if (isSuspiciousEmail(email)) return showAuthError(BOT_EMAIL_MESSAGE);
             if (password.length < 6) return showAuthError('Password must be at least 6 characters');
 
             btn.disabled = true;
@@ -5358,6 +5450,237 @@
                 </div>`;
             overlay.classList.add('open');
         }
+
+        // ── FORGOT / RESET PASSWORD ──
+        // Flow: email → (link in email  OR  code typed here) → new password.
+        // Supabase only sends an email when an account with that address exists, and it
+        // returns the same response either way, so this form can't be used to find out
+        // which emails are registered. Link/code lifetime (30 min) is enforced by
+        // Supabase: Authentication → Providers → Email → "Email OTP Expiration" = 1800.
+        const PW_RESET_EXPIRY_MS = 30 * 60 * 1000;
+        let _pwRecoveryMode = false;   // true while a recovery session is open but password not yet changed
+        let _pwEmail = '';
+        let _pwSentAt = 0;
+        let _pwCooldownTimer = null;
+
+        function pwClearMsgs() {
+            document.getElementById('pw-error').classList.remove('show');
+            document.getElementById('pw-success').style.display = 'none';
+        }
+        function pwError(msg) {
+            document.getElementById('pw-success').style.display = 'none';
+            document.getElementById('pw-error-text').textContent = msg;
+            document.getElementById('pw-error').classList.add('show');
+        }
+        function pwSuccess(msg) {
+            document.getElementById('pw-error').classList.remove('show');
+            const el = document.getElementById('pw-success');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function pwShowStep(step) {
+            ['email', 'code', 'new'].forEach(s => {
+                document.getElementById('pw-step-' + s).style.display = (s === step) ? '' : 'none';
+            });
+            const subs = {
+                email: 'Reset your password',
+                code:  'Check your email',
+                new:   'Choose a new password'
+            };
+            document.getElementById('pw-sub').textContent = subs[step];
+            pwClearMsgs();
+        }
+        function openPwOverlay() {
+            closeAuthModal();
+            document.getElementById('pw-overlay').classList.add('open');
+        }
+
+        function openForgotPassword() {
+            const loginEmail = (document.getElementById('login-email')?.value || '').trim();
+            document.getElementById('pw-email').value = loginEmail;
+            pwShowStep('email');
+            openPwOverlay();
+        }
+
+        function backToSignIn() {
+            document.getElementById('pw-overlay').classList.remove('open');
+            openAuthModal('login');
+        }
+
+        function closePwModal() {
+            document.getElementById('pw-overlay').classList.remove('open');
+            clearInterval(_pwCooldownTimer);
+            // Left without choosing a new password → end the temporary recovery session
+            if (_pwRecoveryMode) {
+                _pwRecoveryMode = false;
+                _db.auth.signOut();
+            }
+        }
+
+        document.getElementById('pw-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closePwModal();
+        });
+        document.getElementById('pw-email').addEventListener('keydown', e => { if (e.key === 'Enter') sendPasswordReset(); });
+        document.getElementById('pw-code').addEventListener('keydown',  e => { if (e.key === 'Enter') verifyResetCode(); });
+        document.getElementById('pw-new').addEventListener('keydown',   e => { if (e.key === 'Enter') document.getElementById('pw-new2').focus(); });
+        document.getElementById('pw-new2').addEventListener('keydown',  e => { if (e.key === 'Enter') submitNewPassword(); });
+
+        function startPwCooldown(seconds) {
+            const link = document.getElementById('pw-resend');
+            clearInterval(_pwCooldownTimer);
+            let left = seconds;
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+            link.textContent = 'Resend in ' + left + 's';
+            _pwCooldownTimer = setInterval(() => {
+                left--;
+                if (left <= 0) {
+                    clearInterval(_pwCooldownTimer);
+                    link.style.pointerEvents = '';
+                    link.style.opacity = '';
+                    link.textContent = 'Resend email';
+                } else {
+                    link.textContent = 'Resend in ' + left + 's';
+                }
+            }, 1000);
+        }
+
+        function resendPasswordReset(e) {
+            e.preventDefault();
+            document.getElementById('pw-email').value = _pwEmail;
+            sendPasswordReset(true);
+        }
+
+        // Step 1: request the reset email
+        async function sendPasswordReset(isResend) {
+            const email = document.getElementById('pw-email').value.trim().toLowerCase();
+            pwClearMsgs();
+
+            if (!email) return pwError('Please enter your email address');
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return pwError('Please enter a valid email address');
+            if (isSuspiciousEmail(email)) return pwError(BOT_EMAIL_MESSAGE);
+
+            const btn = document.getElementById('pw-send-btn');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+
+            // The link brings the user back to this page; this URL must be listed under
+            // Supabase → Authentication → URL Configuration → Redirect URLs.
+            const redirectTo = window.location.origin + window.location.pathname;
+            const { error } = await _db.auth.resetPasswordForEmail(email, { redirectTo });
+
+            btn.disabled = false;
+            btn.textContent = 'Send Reset Link';
+
+            if (error) {
+                const m = (error.message || '').toLowerCase();
+                if (error.status === 429 || m.includes('rate') || m.includes('seconds')) {
+                    return pwError('Too many requests. Please wait a minute and try again.');
+                }
+                return pwError('We couldn\'t send the reset email. Please try again.');
+            }
+
+            _pwEmail  = email;
+            _pwSentAt = Date.now();
+            document.getElementById('pw-sent-to').textContent = email;
+            document.getElementById('pw-code').value = '';
+            pwShowStep('code');
+            if (isResend === true) pwSuccess('A new reset email has been sent.');
+            startPwCooldown(60);
+        }
+
+        // Step 2 (alternative to the link): verify the code from the email
+        async function verifyResetCode() {
+            const token = document.getElementById('pw-code').value.replace(/\s/g, '');
+            pwClearMsgs();
+
+            if (!/^\d{6,10}$/.test(token)) return pwError('Please enter the code from your email');
+            if (Date.now() - _pwSentAt > PW_RESET_EXPIRY_MS) {
+                return pwError('This code has expired. Please request a new one.');
+            }
+
+            const btn = document.getElementById('pw-verify-btn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying…';
+
+            const { error } = await _db.auth.verifyOtp({ email: _pwEmail, token, type: 'recovery' });
+
+            btn.disabled = false;
+            btn.textContent = 'Verify Code';
+
+            if (error) return pwError('That code is invalid or has expired. Please check it or request a new one.');
+
+            _pwRecoveryMode = true;
+            pwShowStep('new');
+        }
+
+        // Reset link clicked (Supabase fires PASSWORD_RECOVERY after reading the link)
+        function openPasswordRecovery() {
+            _pwRecoveryMode = true;
+            document.getElementById('pw-new').value  = '';
+            document.getElementById('pw-new2').value = '';
+            pwShowStep('new');
+            openPwOverlay();
+            // Clean the tokens out of the address bar
+            if (window.history && history.replaceState) {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+        }
+
+        // Step 3: save the new password
+        async function submitNewPassword() {
+            const p1 = document.getElementById('pw-new').value;
+            const p2 = document.getElementById('pw-new2').value;
+            pwClearMsgs();
+
+            if (p1.length < 6) return pwError('Password must be at least 6 characters');
+            if (p1 !== p2)     return pwError('Passwords do not match');
+
+            const btn = document.getElementById('pw-save-btn');
+            btn.disabled = true;
+            btn.textContent = 'Updating…';
+
+            const { error } = await _db.auth.updateUser({ password: p1 });
+
+            btn.disabled = false;
+            btn.textContent = 'Update Password';
+
+            if (error) {
+                const m = (error.message || '').toLowerCase();
+                if (m.includes('different') || m.includes('same')) {
+                    return pwError('Your new password must be different from your old password.');
+                }
+                if (m.includes('session') || m.includes('expired') || m.includes('not authenticated')) {
+                    _pwRecoveryMode = false;
+                    pwShowStep('email');
+                    return pwError('Your reset session has expired. Please request a new link.');
+                }
+                return pwError(error.message || 'Could not update your password. Please try again.');
+            }
+
+            _pwRecoveryMode = false;
+            pwSuccess('Password updated! You\'re now signed in.');
+            setTimeout(() => {
+                document.getElementById('pw-overlay').classList.remove('open');
+                showToast('Password updated successfully');
+            }, 1500);
+        }
+
+        // Expired / already-used link: Supabase sends the user back with an error in the URL
+        (function handleResetLinkError() {
+            const hash = window.location.hash || '';
+            if (!hash.includes('error')) return;
+            const params = new URLSearchParams(hash.replace(/^#/, ''));
+            const code = params.get('error_code') || '';
+            if (code === 'otp_expired' || params.get('error') === 'access_denied') {
+                if (window.history && history.replaceState) {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+                pwShowStep('email');
+                openPwOverlay();
+                pwError('This reset link has expired or was already used. Enter your email to get a new one.');
+            }
+        })();
 
         // ── PHONE REGISTER — step 1: send OTP ──
         async function sendRegOtp() {
@@ -5549,6 +5872,7 @@
             document.getElementById('order-form-error').classList.remove('show');
             if (!name)                                return showOrderFormError('Please enter your full name');
             if (!phone)                               return showOrderFormError('Please enter a phone number');
+            if (checkoutEmailBlocked())               return showOrderFormError(BOT_EMAIL_MESSAGE);
             if (_fulfilment === 'delivery' && !document.getElementById('order-address').value.trim())
                                                       return showOrderFormError('Please enter a delivery address');
 
@@ -5704,6 +6028,7 @@
 
             if (!name)  return showOrderFormError('Please enter your full name');
             if (!phone) return showOrderFormError('Please enter a phone number');
+            if (checkoutEmailBlocked()) return showOrderFormError(BOT_EMAIL_MESSAGE);
             if (_fulfilment === 'delivery' && !address) return showOrderFormError('Please enter a delivery address');
             if (!activeCart.length) return showOrderFormError(_checkoutMode === 'wholesale' ? 'Your wholesale cart is empty' : 'Your cart is empty');
             if (_checkoutMode === 'wholesale') {
@@ -6115,23 +6440,17 @@
                 const orderRef = isPreorder ? (o.order_ref || o.id.slice(0, 8).toUpperCase()) : o.id.slice(0, 8).toUpperCase();
                 const statusClass = STATUS_CLASS[o.status] || 'status-pending';
                 
-                const _thumb = url => url
-                    ? `<div class="oh-thumb"><img src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<i class=&quot;fa-solid fa-image&quot;></i>'"></div>`
-                    : `<div class="oh-thumb"><i class="fa-solid fa-image"></i></div>`;
-
                 const itemsHtml = isPreorder 
-                    ? `<div class="order-item-line has-thumb">
-                        ${_thumb(o.product_image || o.image_url || '')}
-                        <span class="oh-info">${escapeHtml(o.product_name || 'Product')}</span>
-                        <span class="oh-price">GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
+                    ? `<div class="order-item-line">
+                        <span>${escapeHtml(o.product_name || 'Product')}</span>
+                        <span>GHS ${parseFloat(o.price || 0).toFixed(2)}</span>
                     </div>`
                     : (o.items || []).map(i => {
                         const variant = [i.size, i.color].filter(Boolean).join(' / ');
                         return `
-                        <div class="order-item-line has-thumb">
-                            ${_thumb(i.img)}
-                            <span class="oh-info">${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
-                            <span class="oh-price">GHS ${(i.price * i.qty).toFixed(2)}</span>
+                        <div class="order-item-line">
+                            <span>${escapeHtml(i.name)}${variant ? ' <span style="color:#999;font-size:11px;">(' + escapeHtml(variant) + ')</span>' : ''} ×${i.qty}</span>
+                            <span>GHS ${(i.price * i.qty).toFixed(2)}</span>
                         </div>
                     `;}).join('');
 
