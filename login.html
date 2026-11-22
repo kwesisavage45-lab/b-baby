@@ -239,6 +239,11 @@
         if (e.key === 'Enter') document.getElementById('password').focus();
     });
 
+    // Blocks the bot-style pattern: firstname.lastname + 2-3 digits @gmail.com
+    function isSuspiciousEmail(email) {
+        return /^[a-z]{3,}\.[a-z]{3,}\d{2,3}@gmail\.com$/.test(String(email || '').trim().toLowerCase());
+    }
+
     async function login() {
         const email    = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
@@ -249,6 +254,11 @@
 
         if (!email || !password) {
             showError('Please enter your email and password');
+            return;
+        }
+
+        if (isSuspiciousEmail(email)) {
+            showError('This email format isn\'t accepted');
             return;
         }
 
